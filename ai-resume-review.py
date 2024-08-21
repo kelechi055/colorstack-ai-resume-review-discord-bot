@@ -270,9 +270,9 @@ async def on_message(message):
                         # Completion message
                         final_embed = discord.Embed(
                             title="Resume Review Complete! 🎉",
-                            image=gif_url,
                             color=0x0699ab
                         )
+                        final_embed.set_image(url=gif_url)
                         await loading_message.edit(embed=final_embed)
                     except Exception as e:
                         logging.error(f"Failed to process PDF attachment: {e}")
