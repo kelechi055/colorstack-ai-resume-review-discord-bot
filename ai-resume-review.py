@@ -17,7 +17,8 @@ load_dotenv()
 # Environment Variables
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
-FORUM_CHANNEL_ID = int(os.getenv('FORUM_CHANNEL_ID'))  # Set this to your forum channel ID
+RESUME_REVIEW_TEST_CHANNEL_ID = int(os.getenv('RESUME_REVIEW_TEST_CHANNEL_ID'))  # Set this to your resume review test channel ID
+RESUME_REVIEW_CHANNEL_ID = int(os.getenv('RESUME_REVIEW_CHANNEL_ID'))  # Set this to your resume review channel ID
 HIGH_SCORE_COLOR = 0x00ff00
 GOOD_SCORE_COLOR = 0x4BFFFF
 LOW_SCORE_COLOR = 0xFFCF40
@@ -212,8 +213,8 @@ async def on_message(message):
         return
 
     # Verify that the message is part of the correct forum channel
-    if message.channel.parent_id == FORUM_CHANNEL_ID:
-        logging.info(f"Message received in the correct forum channel with ID: {FORUM_CHANNEL_ID}")
+    if message.channel.parent_id == RESUME_REVIEW_TEST_CHANNEL_ID or message.channel.parent_id == RESUME_REVIEW_CHANNEL_ID:
+        logging.info(f"Message received in the correct resume review channel with ID: {message.channel.parent_id}")
 
         if message.attachments:
             for attachment in message.attachments:
