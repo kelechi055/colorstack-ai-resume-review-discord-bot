@@ -227,12 +227,6 @@ async def on_message(message):
                     pdf_bytes = await attachment.read()
                     try:
                         feedback = review_resume(resume=pdf_bytes)
-                        
-                        review_result_embed = discord.Embed(title="Review Completed!", description="Your resume has been reviewed. Here are the details...", color=0x0699ab)
-                        await message.channel.send(embed=review_result_embed)
-
-                        # Delete the loading message after sending the result
-                        await loading_embed.delete()
 
                         # Experiences Section
                         for experience in feedback.get("experiences", []):
