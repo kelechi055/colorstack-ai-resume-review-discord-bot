@@ -246,7 +246,7 @@ async def on_message(message):
                     loading_message = await message.channel.send(embed=loading_embed)
 
                     main_embed = discord.Embed(
-                        title="Resume Feedback",
+                        title="AI Resume Feedback",
                         description="Currently, the resume review tool will only give feedback on your bullet points for experiences and projects. This does not serve as a complete resume review, so you should still seek feedback from peers. Additionally, this tool relies on AI and may not always provide the best feedback, so take it with a grain of salt.",
                         color=0x0699ab
                     )
@@ -284,7 +284,7 @@ async def on_message(message):
                         gif_url = random.choice(GIF_LIST)
                         # Completion message
                         final_embed = discord.Embed(
-                            title="Resume Review Complete! 🎉",
+                            title="AI Resume Review Complete! 🎉",
                             color=0x0699ab
                         )
                         final_embed.set_image(url=gif_url)
