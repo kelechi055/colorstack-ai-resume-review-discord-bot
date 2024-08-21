@@ -1,0 +1,1 @@
+worker: python ai-resume-review.py
