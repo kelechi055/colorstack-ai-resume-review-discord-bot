@@ -29,7 +29,6 @@ GIF_LIST = [
     "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWNucTZ3b2w3dmtrZ29kcTR0Ym1ieGg2eWs2eDhvYTl3aTgzdG81MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MbRdUROzrpoPhEIkMq/giphy.gif", # Jobs not done
     "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ2R2cHdhaDhwNnI2cHp4aXNiamlrdjkyd2I2eWRqbjgwZ2o3bWxhNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/QlCxsMYJ6HI71k92mG/giphy.gif",  # Clapping Robot
     "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3duOXUxdGk0Ym5idGwzZnVvbGZ0YTNqbnVoZ2RkdmpubzQyYnFuOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/10AmJ6TIlbYxAk/giphy-downsized-large.gif",  # Sleep dance
-    "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExMTc1N2F1cmZidzZ1eXo2ZmpjNDgxcGZkMnVjZnVnMndwbW53YnRhbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9dg/S9FkJTxNAPGePMEL0F/giphy.gif",   # Waiting on you
     "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGgycGRjaGM4NGRhaWh0Mnd2azlibHllcnRhMzl6MDNjZWplaDc2dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7abldj0b3rxrZUxW/giphy.gif",  # Backflip
     "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExdTcyMmR0ZDc4aWFuejBicXZnMXk0Z3Zyd3lkajV2ODZmYTF0cHRwbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/yoJC2COHSxjIqadyZW/giphy.gif" # Dog celebrate
     "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNnp6ZmZmcmc5aXhwZzh6Nmt6b3drMmlpdWt3YXNrb2gyZTc3amxvcyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MTZioYqK8rcPe/giphy.gif", # Learn Motivational
