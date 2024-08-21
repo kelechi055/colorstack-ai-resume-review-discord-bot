@@ -170,9 +170,9 @@ def review_resume(resume: bytes) -> dict:
         logging.info(result['content'][0]['text'])
         resume_feedback = ResumeFeedback(**json.loads(result['content'][0]['text']))
         logging.info("Resume reviewed and feedback generated successfully")
-        resume_feedback_model = resume_feedback.model_dump()
+        resume_feedback_model = resume_feedback.dict()
         logging.info(resume_feedback_model)
-        return resume_feedback.model_dump()
+        return resume_feedback.dict()
     except ValidationError as e:
         logging.error(f"Validation error: {str(e)}")
         raise
