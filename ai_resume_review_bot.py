@@ -16,16 +16,16 @@ class ResumeBot(commands.Bot):
     async def on_ready(self):
         logging.info(f'Logged in as {self.user.name}')
         logging.info('Bot is ready to process messages and threads')
-        
+    
     async def on_message(self, message):
-        logging.info(f"Message event received: {message.id} in channel {message.channel.parent_id}")
+        # logging.info(f"Message event received: {message.id} in channel {message.channel.parent_id}")
 
         # Avoid processing the bot's own messages
         if message.author == self.user:
             return
 
         # Verify that the message is part of the correct forum channel
-        if message.channel.parent_id == RESUME_REVIEW_TEST_CHANNEL_ID or message.channel.parent_id == RESUME_REVIEW_CHANNEL_ID:
+        if isinstance(message.channel, discord.Thread) and message.channel.parent_id == RESUME_REVIEW_TEST_CHANNEL_ID or message.channel.parent_id == RESUME_REVIEW_CHANNEL_ID:
             logging.info(f"Message received in the correct resume review channel with ID: {message.channel.parent_id}")
 
             if message.attachments:
