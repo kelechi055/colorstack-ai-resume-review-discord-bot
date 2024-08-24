@@ -1,1 +1,1 @@
-worker: python ai-resume-review.py
+worker: python main.py
