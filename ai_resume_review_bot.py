@@ -50,12 +50,19 @@ class ResumeBot(commands.Bot):
                         pdf_bytes = await attachment.read()
                         try:
                             feedback = review_resume(resume=pdf_bytes)
+                            
+                            total_experiences_score = 0
+                            total_projects_score = 0
+                            total_experiences_bullets = 0
+                            total_projects_bullets = 0
 
                             # Experiences Section
                             for experience in feedback.get("experiences", []):
                                 experience_embed = discord.Embed(title=f"**Experience at {experience['company']} - {experience['role']}**\n", color=0xe5e7eb)
                                 await message.channel.send(embed=experience_embed)
                                 for idx, bullet in enumerate(experience['bullets']):
+                                    total_experiences_score += bullet['score']
+                                    total_experiences_bullets += 1
                                     rewrites = "\n\n> ".join(bullet['rewrites']) if bullet['rewrites'] else None
                                     bullet_embed = discord.Embed(title=f"{bullet['score']}/10", color=get_score_color(bullet['score']))
                                     bullet_embed.add_field(name="", value=f"> *{bullet['content']}*\n", inline=False)
@@ -63,12 +70,22 @@ class ResumeBot(commands.Bot):
                                     if rewrites:
                                         bullet_embed.add_field(name="Suggestions ", value=f"> {rewrites}", inline=False)
                                     await message.channel.send(embed=bullet_embed)
+                                    
+                            avg_expereinces_final_score = total_experiences_score / total_experiences_bullets
+                            expereinces_final_embed = discord.Embed(
+                                title="Total Experience Section Score",
+                                color=get_score_color(avg_expereinces_final_score)
+                            )
+                            expereinces_final_embed.add_field(name=f"{avg_expereinces_final_score}/10", value="", inline=False)
+                            await message.channel.send(embed=expereinces_final_embed)
 
                             # Projects Section
                             for project in feedback.get("projects", []):
                                 project_embed = discord.Embed(title=f"**Project: {project['title']}**\n", color=0xe5e7eb)
                                 await message.channel.send(embed=project_embed)
                                 for idx, bullet in enumerate(project['bullets']):
+                                    total_projects_score += bullet['score']
+                                    total_projects_bullets += 1
                                     rewrites = "\n\n> ".join(bullet['rewrites']) if bullet['rewrites'] else None
                                     bullet_embed = discord.Embed(title=f"{bullet['score']}/10", color=get_score_color(bullet['score']))
                                     bullet_embed.add_field(name="", value=f"> *{bullet['content']}*\n", inline=False)
@@ -76,12 +93,22 @@ class ResumeBot(commands.Bot):
                                     if rewrites:
                                         bullet_embed.add_field(name="Suggestions ", value=f"> {rewrites}", inline=False)
                                     await message.channel.send(embed=bullet_embed)
+                                    
+                            avg_projects_final_score = total_projects_score / total_projects_bullets
+                            projects_final_embed = discord.Embed(
+                                title="Total Experience Section Score",
+                                color=get_score_color(avg_projects_final_score)
+                            )
+                            projects_final_embed.add_field(name=f"{avg_projects_final_score}/10", value="", inline=False)
+                            await message.channel.send(embed=projects_final_embed)
 
+                            final_score = (avg_projects_final_score + avg_expereinces_final_score) / 2
                             gif_url = random.choice(GIF_LIST)
                             # Completion message
                             final_embed = discord.Embed(
                                 title="AI Resume Review Complete! 🎉",
-                                color=0x0699ab
+                                description=f"Final Score: {final_score}/10",
+                                color=get_score_color(final_score)
                             )
                             final_embed.set_image(url=gif_url)
                             await loading_message.edit(embed=final_embed)
