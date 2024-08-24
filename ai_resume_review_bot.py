@@ -95,5 +95,5 @@ def start_bot(token):
     intents = discord.Intents.default()
     intents.message_content = True
     intents.members = True
-    bot = commands.Bot(command_prefix="!", intents=intents)
+    bot = ResumeBot(command_prefix="!", intents=intents)
     bot.run(token)

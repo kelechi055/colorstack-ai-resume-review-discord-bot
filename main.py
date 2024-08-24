@@ -1,5 +1,3 @@
-import random
-
 import logging
 from ai_resume_review_bot import start_bot
 from config import DISCORD_TOKEN
