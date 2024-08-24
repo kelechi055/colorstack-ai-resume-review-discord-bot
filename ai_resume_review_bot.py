@@ -73,10 +73,10 @@ class ResumeBot(commands.Bot):
                                     
                             avg_expereinces_final_score = total_experiences_score / total_experiences_bullets
                             expereinces_final_embed = discord.Embed(
-                                title="Total Experience Section Score",
+                                title="Experience Section Score",
                                 color=get_score_color(avg_expereinces_final_score)
                             )
-                            expereinces_final_embed.add_field(name=f"{avg_expereinces_final_score}/10", value="", inline=False)
+                            expereinces_final_embed.add_field(name=f"{round(avg_expereinces_final_score,1)}/10", value="", inline=False)
                             await message.channel.send(embed=expereinces_final_embed)
 
                             # Projects Section
@@ -96,10 +96,10 @@ class ResumeBot(commands.Bot):
                                     
                             avg_projects_final_score = total_projects_score / total_projects_bullets
                             projects_final_embed = discord.Embed(
-                                title="Total Experience Section Score",
+                                title="Project Section Score",
                                 color=get_score_color(avg_projects_final_score)
                             )
-                            projects_final_embed.add_field(name=f"{avg_projects_final_score}/10", value="", inline=False)
+                            projects_final_embed.add_field(name=f"{round(avg_projects_final_score, 1)}/10", value="", inline=False)
                             await message.channel.send(embed=projects_final_embed)
 
                             final_score = (avg_projects_final_score + avg_expereinces_final_score) / 2
@@ -107,7 +107,7 @@ class ResumeBot(commands.Bot):
                             # Completion message
                             final_embed = discord.Embed(
                                 title="AI Resume Review Complete! 🎉",
-                                description=f"Final Score: {final_score}/10",
+                                description=f"Final Score: {round(final_score, 1)}/10",
                                 color=get_score_color(final_score)
                             )
                             final_embed.set_image(url=gif_url)
