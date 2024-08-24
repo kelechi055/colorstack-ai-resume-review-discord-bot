@@ -3,7 +3,8 @@ import random
 import discord
 from discord.ext import commands
 
-from config import GIF_LIST, RESUME_REVIEW_CHANNEL_ID, RESUME_REVIEW_TEST_CHANNEL_ID
+from config import RESUME_REVIEW_CHANNEL_ID, RESUME_REVIEW_TEST_CHANNEL_ID
+from utils.gif_picker import get_gif
 from utils.resume_utils import review_resume
 from utils.score_color import get_score_color
 
@@ -103,7 +104,7 @@ class ResumeBot(commands.Bot):
                             await message.channel.send(embed=projects_final_embed)
 
                             final_score = (avg_projects_final_score + avg_expereinces_final_score) / 2
-                            gif_url = random.choice(GIF_LIST)
+                            gif_url = get_gif(final_score)
                             # Completion message
                             final_embed = discord.Embed(
                                 title="AI Resume Review Complete! 🎉",
