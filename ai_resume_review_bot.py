@@ -1,6 +1,11 @@
 import logging
+import random
 import discord
 from discord.ext import commands
+
+from config import GIF_LIST, RESUME_REVIEW_CHANNEL_ID, RESUME_REVIEW_TEST_CHANNEL_ID
+from utils.resume_utils import review_resume
+from utils.score_color import get_score_color
 
 
 class ResumeBot(commands.Bot):
@@ -8,16 +13,15 @@ class ResumeBot(commands.Bot):
         super().__init__(command_prefix, intents=intents)
         
 
-    async def on_ready():
-        logging.info(f'Logged in as {bot.user.name}')
+    async def on_ready(self):
+        logging.info(f'Logged in as {self.user.name}')
         logging.info('Bot is ready to process messages and threads')
         
-    @bot.event
-    async def on_message(message):
+    async def on_message(self, message):
         logging.info(f"Message event received: {message.id} in channel {message.channel.parent_id}")
 
         # Avoid processing the bot's own messages
-        if message.author == bot.user:
+        if message.author == self.user:
             return
 
         # Verify that the message is part of the correct forum channel
