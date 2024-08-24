@@ -107,11 +107,14 @@ class ResumeBot(commands.Bot):
                             # Completion message
                             final_embed = discord.Embed(
                                 title="AI Resume Review Complete! 🎉",
-                                description=f"Final Score: {round(final_score, 1)}/10",
                                 color=get_score_color(final_score)
                             )
                             final_embed.set_image(url=gif_url)
                             await loading_message.edit(embed=final_embed)
+                            
+                            final_score_embed = discord.Embed(title=f"Final Score: {round(final_score, 1)}/10", color=get_score_color(final_score))
+                            final_score_embed.set_image(url=gif_url)
+                            await message.channel.send(embed=projects_final_embed)
                         except Exception as e:
                             logging.error(f"Failed to process PDF attachment: {e}")
         else:
