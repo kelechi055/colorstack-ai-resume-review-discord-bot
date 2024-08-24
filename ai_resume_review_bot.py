@@ -114,7 +114,7 @@ class ResumeBot(commands.Bot):
                             
                             final_score_embed = discord.Embed(title=f"Final Score: {round(final_score, 1)}/10", color=get_score_color(final_score))
                             final_score_embed.set_image(url=gif_url)
-                            await message.channel.send(embed=projects_final_embed)
+                            await message.channel.send(embed=final_score_embed)
                         except Exception as e:
                             logging.error(f"Failed to process PDF attachment: {e}")
         else:
