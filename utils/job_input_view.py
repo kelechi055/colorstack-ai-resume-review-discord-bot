@@ -59,4 +59,4 @@ class JobInputView(View):
     async def no_button_callback(self, interaction: discord.Interaction):
         interaction.data['custom_id'] = 'no'
         await interaction.response.send_message("No problem! I'll just provide general resume formatting feedback.", ephemeral=True)
-        return
+        self.stop()
