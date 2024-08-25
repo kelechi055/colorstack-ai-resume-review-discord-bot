@@ -46,7 +46,7 @@ class ResumeBot(commands.Bot):
 
                         main_embed = discord.Embed(
                             title="AI Resume Feedback",
-                            description="Currently, the resume review tool will only give feedback on your bullet points for experiences and projects. This does not serve as a complete resume review, so you should still seek feedback from peers. Additionally, this tool relies on AI and may not always provide the best feedback, so take it with a grain of salt.\n\n**Disclaimer:** Any suggestions provided are purely examples and should not be added as-is without verification of accuracy.",
+                            description="Currently, the resume review tool will only give feedback on your bullet points for experiences and projects, as well as, resume formatting. This does not serve as a complete resume review, so you should still seek feedback from peers. Additionally, this tool relies on AI and may not always provide the best feedback, so take it with a grain of salt.\n\n**Disclaimer:** Any suggestions provided are purely examples and should not be added as-is without verification of accuracy.",
                             color=0x0699ab
                         )
                         await message.channel.send(embed=main_embed)
