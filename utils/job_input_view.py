@@ -44,7 +44,7 @@ class JobInputView(View):
         }
         
         # Confirm and process
-        await self.message.channel.send(f"Thank you! Here’s what you provided:\n\n**Job Title**: {job_title.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}")
+        await self.message.channel.send(f"Thank you! Here’s what you provided:\n\n**Job Title**: {job_title.content}\n**Company**: {company.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}")
 
     async def no_button_callback(self, interaction: discord.Interaction):
         interaction.data['custom_id'] == 'no'
