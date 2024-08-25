@@ -26,26 +26,19 @@ class JobInputView(View):
             # Step 2: Job Title
             job_title_message = await self.message.channel.send("🔖 **Job Title**: Please enter the job title for this role.")
             job_title = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=30)
-            self.stop()  # End the view's timeout
-            await job_title_message.delete()
             
             # Step 3: Company
             company_message = await self.message.channel.send("🔖 **Company**: Please enter the company for this role.")
             company = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=30)
-            self.stop()  # End the view's timeout
-            await company_message.delete()
             
             # Step 4: Minimum Qualifications
             min_qual_message = await self.message.channel.send("💼 **Minimum Qualifications**: Please enter the minimum qualifications for the job.")
             min_qual = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=45)
-            self.stop()  # End the view's timeout
-            await min_qual_message.delete()
             
             # Step 5: Preferred Qualifications
             pref_qual_message = await self.message.channel.send("📅 **Preferred Qualifications**: Please enter the preferred qualifications for the job.")
             pref_qual = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=45)
-            self.stop()  # End the view's timeout
-            await pref_qual_message.delete()
+            self.stop()
             
             self.job_details = {
                 "job_title": job_title.content,
@@ -62,6 +55,10 @@ class JobInputView(View):
             await company.delete()
             await min_qual.delete()
             await pref_qual.delete()
+            await job_title_message.delete()
+            await company_message.delete()
+            await min_qual_message.delete()
+            await pref_qual_message.delete()
         except asyncio.TimeoutError:
             await self.message.channel.send("You took too long to respond. Please try again.")
         except Exception as e:
