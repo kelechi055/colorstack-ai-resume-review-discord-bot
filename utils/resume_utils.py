@@ -39,14 +39,20 @@ def review_resume(resume: bytes, job_title: str, company: str, min_qual: str, pr
     - Highlight important details without overwhelming with too much text.
     - Be particularly critical of resumes that include unprofessional language, irrelevant experiences, or inappropriate formatting.
     """
+    
+    job_details = "Please review this resume."
+    
+    if job_title and company and min_qual and pref_qual:
+        job_details = f"""
+        Please review this resume for the role of {job_title} at {company}. 
+        The job's minimum qualifications are as follows:
+        {min_qual}
+        The job's preferred qualifications are as follows:
+        {pref_qual}
+        """
 
     user_prompt = f"""
-    Please review this resume for the role of {job_title} at {company}. 
-    The job's minimum qualifications is as follows:
-    {min_qual}
-    The job's preferred qualifications is as follows:
-    {pref_qual}
-    
+    {job_details}
     Only return JSON that respects the following schema:
     experiences: [
         {

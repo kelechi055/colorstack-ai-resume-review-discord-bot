@@ -61,8 +61,7 @@ class ResumeBot(commands.Bot):
                             elif interaction.data['custom_id'] == 'no':
                                 await interaction.response.send_message("No problem! I'll just provide general resume formatting feedback.", ephemeral=True)
                         except asyncio.TimeoutError:
-                            await message.channel.send("The request timed out. Please try again.")
-                            return
+                            await message.channel.send("The request timed out. I'll just provide general resume formatting feedback.")
                         
                         gif_url = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif"  # Example GIF URL
                         loading_embed = discord.Embed(
