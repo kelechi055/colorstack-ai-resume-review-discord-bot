@@ -26,6 +26,19 @@ class FormattingFeedback(BaseModel):
     headings: bool = Field(..., description="Whether there is an issue with headings")
     headings_feedback: str = Field(..., description="Feedback on headings")
     overall_score: int = Field(..., ge=1, le=10, description="Overall formatting score")
+    
+class FormattingFeedback(BaseModel):
+    font_consistency: bool
+    font_feedback: str = Field(..., description="Feedback on font consistency")
+    alignment: bool
+    alignment_feedback: str = Field(..., description="Feedback on text alignment")
+    spacing: bool
+    spacing_feedback: str = Field(..., description="Feedback on spacing")
+    headings: bool
+    headings_feedback: str = Field(..., description="Feedback on heading styles")
+    is_one_page: bool
+    bullets_two_lines_or_less: bool
+    excessive_white_space: bool
 
 class ResumeFeedback(BaseModel):
     experiences: list[ResumeExperience] = Field(..., description="List of experiences in the resume")
