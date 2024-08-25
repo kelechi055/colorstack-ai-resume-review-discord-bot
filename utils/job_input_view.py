@@ -21,7 +21,7 @@ class JobInputView(View):
     async def yes_button_callback(self, interaction: discord.Interaction):
         interaction.data['custom_id'] = 'yes'
         
-        # await interaction.response.send_message("Do you have job posting to review for?", ephemeral=True)
+        await interaction.response.send_message("I will ask you a quick serious of questions to get the job details.", ephemeral=True)
 
         try:
             # Step 2: Job Title
