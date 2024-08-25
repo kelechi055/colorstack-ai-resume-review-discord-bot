@@ -51,7 +51,6 @@ class ResumeBot(commands.Bot):
                         
                         if view.job_details:
                             self.job_details = view.job_details
-                            await message.channel.send(f"Received job details:\n{self.job_details}")
                         else:
                             await message.channel.send("No job details provided. Providing general resume formatting feedback.")
                             self.job_details = None
@@ -74,7 +73,7 @@ class ResumeBot(commands.Bot):
                         pdf_bytes = await attachment.read()
                         try:
                             if self.job_details:
-                                feedback = review_resume(resume=pdf_bytes, job_title=self.job_details["job_title"], company_name=self.job_details["company"], min_qual=self.job_details["min_qual"], pref_qual=self.job_details["pref_qual"])
+                                feedback = review_resume(resume=pdf_bytes, job_title=self.job_details["job_title"], company=self.job_details["company"], min_qual=self.job_details["min_qual"], pref_qual=self.job_details["pref_qual"])
                             else:
                                 feedback = review_resume(resume=pdf_bytes)
                             
