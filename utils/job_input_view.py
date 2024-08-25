@@ -50,15 +50,15 @@ class JobInputView(View):
             # Confirm and process
             await self.message.channel.send(f"Thank you! Here’s the job description you provided:\n\n**Job Title**: {job_title.content}\n**Company**: {company.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}")
             
-            # Clean up
-            await job_title.delete()
-            await company.delete()
-            await min_qual.delete()
-            await pref_qual.delete()
-            await job_title_message.delete()
-            await company_message.delete()
-            await min_qual_message.delete()
-            await pref_qual_message.delete()
+            # # Clean up
+            # await job_title.delete()
+            # await company.delete()
+            # await min_qual.delete()
+            # await pref_qual.delete()
+            # await job_title_message.delete()
+            # await company_message.delete()
+            # await min_qual_message.delete()
+            # await pref_qual_message.delete()
             
             self.stop()
         except asyncio.TimeoutError:
