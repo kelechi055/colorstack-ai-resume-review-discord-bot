@@ -124,15 +124,13 @@ class ResumeBot(commands.Bot):
                                         field_value = f"{aspect_data['feedback']} (Score: {aspect_data['score']}/10)"
                                         formatting_embed.add_field(name=field_name, value=field_value, inline=False)
 
+                                await message.channel.send(embed=formatting_embed)
+                                
                                 # Overall score
                                 overall_score = formatting['overall_score']
-                                overall_emoji = get_score_emoji(overall_score)
-                                formatting_embed.add_field(
-                                    name=f"{overall_emoji} Overall Formatting Score",
-                                    value=f"**{overall_score}/10**\n\nKeep improving your resume formatting for better results!",
-                                    inline=False
-                                )
-                                await message.channel.send(embed=formatting_embed)
+                                overall_score_embed = discord.Embed(title="Formatting Score", color=get_score_color(overall_score))
+                                overall_score_embed.add_field(name=f"{round(overall_score,1)}/10", value="", inline=False)
+                                await message.channel.send(embed=overall_score_embed)
 
                             final_score = (avg_projects_final_score + avg_expereinces_final_score + total_formatting_score) / 3
                             gif_url = get_gif(final_score)
