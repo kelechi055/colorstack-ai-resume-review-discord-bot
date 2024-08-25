@@ -41,6 +41,7 @@ class ResumeBot(commands.Bot):
                             color=0x0699ab
                         )
                         loading_embed.set_image(url=gif_url)
+                        loading_embed.set_footer(text="Powered by ColorStack ResumeAI Bot :blueicon:")
                         loading_message = await message.channel.send(embed=loading_embed)
 
                         main_embed = discord.Embed(
