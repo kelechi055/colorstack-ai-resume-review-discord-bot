@@ -50,13 +50,9 @@ class ResumeBot(commands.Bot):
                         
                         if view.value is None:
                             await message.channel.send("No response received. Review canceled.")
-                        elif view.value:
-                            await message.channel.send("Proceeding with the review...")
-                            # Place the logic for processing the resume here
                         else:
-                            await message.channel.send("Review canceled.")
-                        
-                        job_input_view = JobInputView(self, message)
+                            await message.channel.send("Proceeding with the review...")
+
                         
                         gif_url = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif"  # Example GIF URL
                         loading_embed = discord.Embed(

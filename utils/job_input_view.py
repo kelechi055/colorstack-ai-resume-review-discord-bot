@@ -27,7 +27,7 @@ class JobInputView(View):
         responsibilities = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
         
         # Step 4: Required Skills
-        await self.message.channel.send("💼 **Required Skills**: Please enter the required skills for the job. Separate each skill with a comma.")
+        await self.message.channel.send("💼 **Minimum Qualifications**: Please enter the minimum qualifications for the job.")
         skills = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
         
         # Step 5: Experience Requirements
