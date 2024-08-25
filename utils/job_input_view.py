@@ -38,7 +38,6 @@ class JobInputView(View):
             # Step 5: Preferred Qualifications
             pref_qual_message = await self.message.channel.send("📅 **Preferred Qualifications**: Please enter the preferred qualifications for the job.")
             pref_qual = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=45)
-            self.stop()
             
             self.job_details = {
                 "job_title": job_title.content,
@@ -59,6 +58,8 @@ class JobInputView(View):
             await company_message.delete()
             await min_qual_message.delete()
             await pref_qual_message.delete()
+            
+            self.stop()
         except asyncio.TimeoutError:
             await self.message.channel.send("You took too long to respond. Please try again.")
         except Exception as e:
