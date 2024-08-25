@@ -6,29 +6,41 @@ from utils.anthropic_utils import get_chat_completion
 from utils.pdf_utils import convert_pdf_to_image
 
 def review_resume(resume: bytes, job_title: str = None, company: str = None, min_qual: str = None, pref_qual: str = None) -> dict:
-    system_prompt = """
-    You are the best resume reviewer in the world, specifically for resumes aimed at getting a software engineering internship or new grad role.
+    job_details = {
+        "job_title": "Softare Engineer" if job_title is None else job_title,
+        "company": "Google" if company is None else company,
+        "min_qual": "Education: Currently pursuing a Bachelor's or Master's degree in Computer Science, a related technical field, or equivalent practical experience.\nProgramming Skills: Proficiency in at least one programming language (e.g., Python, Java, C++, Go).\nComputer Science Fundamentals: Solid understanding of data structures, algorithms, and complexity analysis.\nTechnical Experience: Experience with software development, demonstrated through personal projects, coursework, or internships.\nProblem-Solving Ability: Strong analytical and problem-solving skills, with the ability to apply theoretical concepts to practical scenarios.\nCollaboration and Communication: Ability to work effectively in a team environment, with strong written and verbal communication skills." if min_qual is None else min_qual,
+        "pref_qual": "Advanced Coursework: Completed coursework or have practical experience in advanced computer science topics such as distributed systems, machine learning, or security.\nTechnical Experience: Internships or co-op experience in a software development role, or significant contributions to open-source projects.\nCoding Competitions: Participation in coding competitions or technical challenges, such as competitive programming or hackathons.\nProject Experience: Demonstrated experience with complex software projects, either through internships, personal projects, or academic coursework.\nSoft Skills: Proven ability to take initiative, manage multiple tasks effectively, and adapt to new challenges in a fast-paced environment.\nLeadership and Impact: Experience in leadership roles, or demonstrated impact through technical or non-technical contributions." if pref_qual is None else pref_qual
+    }
+        
+    system_prompt = f"""
+    You are an expert resume reviewer for a {job_details["job_title"]} internship or new grad role at {job_details["company"]}. Your review should be highly detailed and focused on the following aspects:
+
+    Ensure the resume aligns with the job's qualifications. 
+    - Minimum Qualifications: {job_details["min_qual"]}
+    - Preferred Qualifications: {job_details["pref_qual"]}
+    
     Here are your guidelines for a great bullet point:
-    - It starts with a strong, relevant action verb that pertains to software engineering or related technical roles.
-    - It is specific, technical, and directly related to software engineering tasks or achievements.
-    - It talks about significant, measurable achievements within a software engineering context.
+    - It starts with a strong, relevant action verb that pertains to {job_details["job_title"]} or related technical roles.
+    - It is specific, technical, and directly related to {job_details["job_title"]} tasks or achievements.
+    - It talks about significant, measurable achievements within a {job_details["job_title"]} context.
     - It is concise and professional. No fluff or irrelevant details.
-    - If possible, it quantifies impact, especially in technical or software-related terms.
+    - If possible, it quantifies impact, especially in technical or {job_details["job_title"]}-related terms.
     - Two lines or less.
     - Does not have excessive white space.
-    - Avoids any mention of irrelevant skills, hobbies, or experiences that do not directly contribute to a software engineering role.
+    - Avoids any mention of irrelevant skills, hobbies, or experiences that do not directly contribute to a {job_details["job_title"]} role.
 
     Here are your guidelines for giving feedback:
     - Be kind, but firm.
     - Be specific.
     - Be actionable.
-    - Ask questions like "how many...", "how much...", "what was the technical impact...", "how did this experience contribute to your software engineering skills...".
-    - Be critical about the relevance of the content to a software engineering role.
+    - Ask questions like "how many...", "how much...", "what was the technical impact...", "how did this experience contribute to your {job_details["job_title"]} skills...".
+    - Be critical about the relevance of the content to a {job_details["job_title"]} role.
     - If the bullet point is NOT a 10/10, then the last sentence of your feedback MUST be an actionable improvement item focused on how to make the experience or achievement more relevant to software engineering.
 
     Here are your guidelines for rewriting bullet points:
-    - If the original bullet point is a 10/10 and highly relevant to software engineering, do NOT suggest any rewrites.
-    - If the original bullet point is not a 10/10 or not relevant to software engineering, suggest 1-2 rewrite options that make the content more technical, professional, and directly related to the field.
+    - If the original bullet point is a 10/10 and highly relevant to {job_details["job_title"]}, do NOT suggest any rewrites.
+    - If the original bullet point is not a 10/10 or not relevant to {job_details["job_title"]}, suggest 1-2 rewrite options that make the content more technical, professional, and directly related to the field.
     - Be 1000% certain that the rewrites address all of your feedback.
 
     Formatting guidelines:
@@ -39,20 +51,13 @@ def review_resume(resume: bytes, job_title: str = None, company: str = None, min
     - Highlight important details without overwhelming with too much text.
     - Be particularly critical of resumes that include unprofessional language, irrelevant experiences, or inappropriate formatting.
     """
-    
-    job_details = "Please review this resume."
-    
-    if job_title and company and min_qual and pref_qual:
-        job_details = f"""
-        Please review this resume for the role of {job_title} at {company}. 
-        The job's minimum qualifications are as follows:
-        {min_qual}
-        The job's preferred qualifications are as follows:
-        {pref_qual}
-        """
 
     user_prompt = f"""
-    {job_details}
+    Please review this resume for the role of {job_title} at {company}. 
+    The job's minimum qualifications are as follows:
+    {min_qual}
+    The job's preferred qualifications are as follows:
+    {pref_qual}
     Only return JSON that respects the following schema:
     experiences: [
         {{
