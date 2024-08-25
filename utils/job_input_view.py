@@ -16,6 +16,7 @@ class JobInputView(View):
         self.add_item(no_button)
 
     async def yes_button_callback(self, interaction: discord.Interaction):
+        interaction.data['custom_id'] == 'yes'
         await interaction.response.send_message("Great! Let's get started with the job description comparison.", ephemeral=True)
         
         # Step 2: Job Title
@@ -47,4 +48,5 @@ class JobInputView(View):
         return job_details
 
     async def no_button_callback(self, interaction: discord.Interaction):
+        interaction.data['custom_id'] == 'no'
         await interaction.response.send_message("No problem! I'll just provide general resume formatting feedback.", ephemeral=True)
