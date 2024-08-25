@@ -36,7 +36,7 @@ class JobInputView(View):
         
         job_details = {
             "job_title": job_title.content,
-            "company": company.context,
+            "company": company.content,
             "minimum_qualifications": min_qual.content,
             "preferred_qualifications": pref_qual.content
         }
