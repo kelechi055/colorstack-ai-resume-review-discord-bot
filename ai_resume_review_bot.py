@@ -142,6 +142,7 @@ class ResumeBot(commands.Bot):
                                 color=get_score_color(final_score)
                             )
                             final_embed.set_image(url=gif_url)
+                            final_score_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
                             await loading_message.edit(embed=final_embed)
                             
                             final_score_embed = discord.Embed(title=f"Final Score: {round(final_score, 1)}/10", color=get_score_color(final_score))
