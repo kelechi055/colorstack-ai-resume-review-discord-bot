@@ -31,12 +31,8 @@ class JobInputView(View):
         skills = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
         
         # Step 5: Experience Requirements
-        await self.message.channel.send("📅 **Experience Requirements**: Please specify the required experience, such as years in the field or specific types of experience.")
+        await self.message.channel.send("📅 **Preferred Qualifications**: Please enter the preferred qualifications for the job.")
         experience = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
-        
-        # Step 6: Educational Requirements
-        await self.message.channel.send("🎓 **Educational Requirements**: Please specify the required educational qualifications.")
-        education = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
         
         # Confirm and process
         await self.message.channel.send(f"Thank you! Here’s what you provided:\n\n**Job Title**: {job_title.content}\n**Responsibilities**: {responsibilities.content}\n**Required Skills**: {skills.content}\n**Experience**: {experience.content}\n**Education**: {education.content}")
