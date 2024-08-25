@@ -40,8 +40,7 @@ class ResumeBot(commands.Bot):
                         
                         # Sending the initial feedback embed
                         main_embed = discord.Embed(
-                            title="AI Resume Feedback",
-                            description="Would you like to input a job to compare your resume to?",
+                            title="Do you have job posting to review for?",
                             color=0x0699ab
                         )
                         view = JobInputView(self, message)
