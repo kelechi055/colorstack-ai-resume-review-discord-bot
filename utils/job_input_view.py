@@ -18,19 +18,15 @@ class JobInputView(View):
     async def yes_button_callback(self, interaction: discord.Interaction):
         await interaction.response.send_message("Great! Let's get started with the job description comparison.", ephemeral=True)
         
-        # Step 2: Job Title (Optional)
+        # Step 2: Job Title
         await self.message.channel.send("🔖 **Job Title**: Please enter the job title for this role.")
         job_title = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=60)
         
-        # Step 3: Key Responsibilities
-        await self.message.channel.send("📝 **Key Responsibilities**: Please list the key responsibilities for this role. You can separate each responsibility with a comma.")
-        responsibilities = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
-        
-        # Step 4: Required Skills
+        # Step 3: Minimum Qualifications
         await self.message.channel.send("💼 **Minimum Qualifications**: Please enter the minimum qualifications for the job.")
         skills = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
         
-        # Step 5: Experience Requirements
+        # Step 4: Preferred Qualifications
         await self.message.channel.send("📅 **Preferred Qualifications**: Please enter the preferred qualifications for the job.")
         experience = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
         
