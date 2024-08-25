@@ -15,6 +15,7 @@ from utils.score_emoji import get_score_emoji
 class ResumeBot(commands.Bot):
     def __init__(self, command_prefix, intents):
         super().__init__(command_prefix, intents=intents)
+        self.job_details=None
         
 
     async def on_ready(self):
