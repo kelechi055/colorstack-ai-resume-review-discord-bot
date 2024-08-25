@@ -6,6 +6,7 @@ class JobInputView(View):
         super().__init__(timeout=60)
         self.bot = bot
         self.message = message
+        self.job_details = None
 
         yes_button = Button(label="Yes", style=discord.ButtonStyle.success)
         yes_button.callback = self.yes_button_callback
@@ -35,7 +36,7 @@ class JobInputView(View):
         await self.message.channel.send("📅 **Preferred Qualifications**: Please enter the preferred qualifications for the job.")
         pref_qual = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
         
-        job_details = {
+        self.job_details = {
             "job_title": job_title.content,
             "company": company.content,
             "minimum_qualifications": min_qual.content,
@@ -44,8 +45,6 @@ class JobInputView(View):
         
         # Confirm and process
         await self.message.channel.send(f"Thank you! Here’s what you provided:\n\n**Job Title**: {job_title.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}")
-        
-        return job_details
 
     async def no_button_callback(self, interaction: discord.Interaction):
         interaction.data['custom_id'] == 'no'
