@@ -5,7 +5,7 @@ from models import ResumeFeedback
 from utils.anthropic_utils import get_chat_completion
 from utils.pdf_utils import convert_pdf_to_image
 
-def review_resume(resume: bytes) -> dict:
+def review_resume(resume: bytes, job_title: str, company: str, min_qual: str, pref_qual: str) -> dict:
     system_prompt = """
     You are the best resume reviewer in the world, specifically for resumes aimed at getting a software engineering internship or new grad role.
     Here are your guidelines for a great bullet point:
@@ -40,8 +40,14 @@ def review_resume(resume: bytes) -> dict:
     - Be particularly critical of resumes that include unprofessional language, irrelevant experiences, or inappropriate formatting.
     """
 
-    user_prompt = """
-    Please review this resume. Only return JSON that respects the following schema:
+    user_prompt = f"""
+    Please review this resume for the role of {job_title} at {company}. 
+    The job's minimum qualifications is as follows:
+    {min_qual}
+    The job's preferred qualifications is as follows:
+    {pref_qual}
+    
+    Only return JSON that respects the following schema:
     experiences: [
         {
             bullets: [

@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import random
 import discord
@@ -45,14 +46,23 @@ class ResumeBot(commands.Bot):
                         view = JobInputView(self, message)
                         message_with_view = await message.channel.send(embed=main_embed, view=view)
                         
-                        # Wait for user interaction
-                        await view.wait()
-                        
-                        if view.value is None:
-                            await message.channel.send("No response received. Review canceled.")
-                        else:
-                            await message.channel.send("Proceeding with the review...")
+                        # Wait for user response on job details input
+                        def check(interaction):
+                            return interaction.message.id == message_with_view.id and interaction.user == message.author
 
+                        try:
+                            interaction = await self.wait_for('interaction', check=check, timeout=300)
+                            if interaction.data['custom_id'] == 'yes':
+                                job_details = await view.yes_button_callback(interaction)
+                                self.job_details = job_details
+                                # Process job details here or pass to another function
+                                await self.message.channel.send(f"Received job details:\n{job_details}")
+
+                            elif interaction.data['custom_id'] == 'no':
+                                await interaction.response.send_message("No problem! I'll just provide general resume formatting feedback.", ephemeral=True)
+                        except asyncio.TimeoutError:
+                            await message.channel.send("The request timed out. Please try again.")
+                            return
                         
                         gif_url = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif"  # Example GIF URL
                         loading_embed = discord.Embed(
@@ -71,7 +81,7 @@ class ResumeBot(commands.Bot):
                         await message.channel.send(embed=main_embed)
                         pdf_bytes = await attachment.read()
                         try:
-                            feedback = review_resume(resume=pdf_bytes)
+                            feedback = review_resume(resume=pdf_bytes, jobe_title=self.job_details["job_title"], company_name=self.job_details["company"], min_qual=job_details["min_qual"], pref_qual=job_details["pref_qual"])
                             
                             total_experiences_score = 0
                             total_projects_score = 0
@@ -159,12 +169,12 @@ class ResumeBot(commands.Bot):
                                 color=get_score_color(final_score)
                             )
                             final_embed.set_image(url=gif_url)
-                            final_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
+                            final_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •\n•       Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪      •")
                             await loading_message.edit(embed=final_embed)
                             
                             final_score_embed = discord.Embed(title=f"Final Score: {round(final_score, 1)}/10", color=get_score_color(final_score))
                             final_score_embed.set_image(url=gif_url)
-                            final_score_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
+                            final_score_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •\n•       Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪      •")
                             await message.channel.send(embed=final_score_embed)
                         except Exception as e:
                             logging.error(f"Failed to process PDF attachment: {e}")
