@@ -5,6 +5,7 @@ from discord.ext import commands
 
 from config import RESUME_REVIEW_CHANNEL_ID, RESUME_REVIEW_TEST_CHANNEL_ID
 from utils.gif_picker import get_gif
+from utils.job_input_view import JobInputView
 from utils.resume_utils import review_resume
 from utils.score_color import get_score_color
 from utils.score_emoji import get_score_emoji
@@ -35,13 +36,35 @@ class ResumeBot(commands.Bot):
                     if attachment.filename.lower().endswith('.pdf'):
                         logging.info(f"Processing attachment: {attachment.filename}")
                         
+                        # Sending the initial feedback embed
+                        main_embed = discord.Embed(
+                            title="AI Resume Feedback",
+                            description="Would you like to proceed with the review?",
+                            color=0x0699ab
+                        )
+                        view = JobInputView(self, message)
+                        message_with_view = await message.channel.send(embed=main_embed, view=view)
+                        
+                        # Wait for user interaction
+                        await view.wait()
+                        
+                        if view.value is None:
+                            await message.channel.send("No response received. Review canceled.")
+                        elif view.value:
+                            await message.channel.send("Proceeding with the review...")
+                            # Place the logic for processing the resume here
+                        else:
+                            await message.channel.send("Review canceled.")
+                        
+                        job_input_view = JobInputView(self, message)
+                        
                         gif_url = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif"  # Example GIF URL
                         loading_embed = discord.Embed(
                             title="This could take a minute or two -- our reviewer is hard at work! 😜",
                             color=0x0699ab
                         )
                         loading_embed.set_image(url=gif_url)
-                        loading_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
+                        loading_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •\n•       Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪      •")
                         loading_message = await message.channel.send(embed=loading_embed)
 
                         main_embed = discord.Embed(
