@@ -72,7 +72,7 @@ class ResumeBot(commands.Bot):
                                         bullet_embed.add_field(name="Suggestions ", value=f"> {rewrites}", inline=False)
                                     await message.channel.send(embed=bullet_embed)
                                     
-                            avg_expereinces_final_score = total_experiences_score / total_experiences_bullets
+                            avg_expereinces_final_score = 0 if total_experiences_bullets == 0 else total_experiences_score / total_experiences_bullets
                             expereinces_final_embed = discord.Embed(
                                 title="Experience Section Score",
                                 color=get_score_color(avg_expereinces_final_score)
@@ -95,7 +95,7 @@ class ResumeBot(commands.Bot):
                                         bullet_embed.add_field(name="Suggestions ", value=f"> {rewrites}", inline=False)
                                     await message.channel.send(embed=bullet_embed)
                                     
-                            avg_projects_final_score = total_projects_score / total_projects_bullets
+                            avg_projects_final_score = 0 if total_projects_bullets == 0 else total_projects_score / total_projects_bullets
                             projects_final_embed = discord.Embed(
                                 title="Project Section Score",
                                 color=get_score_color(avg_projects_final_score)
