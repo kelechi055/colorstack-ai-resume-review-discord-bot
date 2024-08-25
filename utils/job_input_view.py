@@ -19,6 +19,8 @@ class JobInputView(View):
 
     async def yes_button_callback(self, interaction: discord.Interaction):
         interaction.data['custom_id'] = 'yes'
+        
+        interaction_message = await interaction.response.send_message("Please provide the job details. I'll ask you a series of questions.", ephemeral=True)
 
         try:
             # Step 2: Job Title
@@ -56,6 +58,7 @@ class JobInputView(View):
             await company_message.delete()
             await min_qual_message.delete()
             await pref_qual_message.delete()
+            await interaction_message.delete()
             
             self.stop()
         except asyncio.TimeoutError:
