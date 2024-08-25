@@ -134,7 +134,7 @@ class ResumeBot(commands.Bot):
 
                                 # Set footer
                                 formatting_embed.set_footer(text="Powered by ColorStack ResumeAI Bot • Good luck with your job search! 🍀")
-                                await message.channel.send(embed=projects_final_embed)
+                                await message.channel.send(embed=formatting_embed)
 
                             final_score = (avg_projects_final_score + avg_expereinces_final_score + total_formatting_score) / 3
                             gif_url = get_gif(final_score)
