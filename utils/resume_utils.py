@@ -55,48 +55,48 @@ def review_resume(resume: bytes, job_title: str, company: str, min_qual: str, pr
     {job_details}
     Only return JSON that respects the following schema:
     experiences: [
-        {
+        {{
             bullets: [
-                {
+                {{
                     content: string,
                     feedback: string,
                     rewrites: [string, string],
                     score: number
-                }
+                }}
             ],
             company: string,
             role: string
-        }
+        }}
     ],
     projects: [
-        {
+        {{
             bullets: [
-                {
+                {{
                     content: string,
                     feedback: string,
                     rewrites: [string, string],
                     score: number
-                }
+                }}
             ],
             title: string
-        }
+        }}
     ],
-    formatting: {
-        font_consistency: { issue: boolean, feedback: string, score: number },
-        font_choice: { issue: boolean, feedback: string, score: number },
-        font_size: { issue: boolean, feedback: string, score: number },
-        alignment: { issue: boolean, feedback: string, score: number },
-        margins: { issue: boolean, feedback: string, score: number },
-        line_spacing: { issue: boolean, feedback: string, score: number },
-        section_spacing: { issue: boolean, feedback: string, score: number },
-        headings: { issue: boolean, feedback: string, score: number },
-        bullet_points: { issue: boolean, feedback: string, score: number },
-        contact_information: { issue: boolean, feedback: string, score: number },
-        overall_layout: { issue: boolean, feedback: string, score: number },
-        page_utilization: { issue: boolean, feedback: string, score: number },
-        consistency: { issue: boolean, feedback: string, score: number },
+    formatting: {{
+        font_consistency: {{ issue: boolean, feedback: string, score: number }},
+        font_choice: {{ issue: boolean, feedback: string, score: number }},
+        font_size: {{ issue: boolean, feedback: string, score: number }},
+        alignment: {{ issue: boolean, feedback: string, score: number }},
+        margins: {{ issue: boolean, feedback: string, score: number }},
+        line_spacing: {{ issue: boolean, feedback: string, score: number }},
+        section_spacing: {{ issue: boolean, feedback: string, score: number }},
+        headings: {{ issue: boolean, feedback: string, score: number }},
+        bullet_points: {{ issue: boolean, feedback: string, score: number }},
+        contact_information: {{ issue: boolean, feedback: string, score: number }},
+        overall_layout: {{ issue: boolean, feedback: string, score: number }},
+        page_utilization: {{ issue: boolean, feedback: string, score: number }},
+        consistency: {{ issue: boolean, feedback: string, score: number }},
         overall_score: number
-    }
+    }}
     """
 
     image_base64 = convert_pdf_to_image(resume)
