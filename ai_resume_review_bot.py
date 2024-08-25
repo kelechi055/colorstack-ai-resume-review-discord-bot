@@ -119,7 +119,7 @@ class ResumeBot(commands.Bot):
                                         aspect_data = formatting[aspect]
                                         emoji = "✅" if not aspect_data['issue'] else "❌"
                                         score_emoji = get_score_emoji(aspect_data['score'])
-                                        field_name = f"{emoji} {aspect.replace('_', ' ').title()} {score_emoji}"
+                                        field_name = f"{emoji} {aspect.replace('_', ' ').title()}: {aspect_data['score']}/10 {score_emoji}"
                                         field_value = f"{aspect_data['feedback']} (Score: {aspect_data['score']}/10)"
                                         formatting_embed.add_field(name=field_name, value=field_value, inline=False)
 
