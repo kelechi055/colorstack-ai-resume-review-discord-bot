@@ -59,7 +59,6 @@ class JobInputView(View):
             await company_message.delete()
             await min_qual_message.delete()
             await pref_qual_message.delete()
-            await interaction_message.delete()
             
             self.stop()
         except asyncio.TimeoutError:
