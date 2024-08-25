@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import discord
 from discord.ui import Button, View
 
@@ -64,7 +65,7 @@ class JobInputView(View):
         except asyncio.TimeoutError:
             await self.message.channel.send("You took too long to respond. Please try again.")
         except Exception as e:
-            await self.message.channel.send(f"An error occurred: {e}")
+            await logging.info(f"An error occurred: {e}")
 
     async def no_button_callback(self, interaction: discord.Interaction):
         interaction.data['custom_id'] = 'no'

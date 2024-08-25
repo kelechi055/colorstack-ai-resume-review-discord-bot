@@ -170,7 +170,7 @@ class ResumeBot(commands.Bot):
                             
                             final_score_embed = discord.Embed(title=f"Final Score: {round(final_score, 1)}/10", color=get_score_color(final_score))
                             final_score_embed.set_image(url=gif_url)
-                            final_score_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •\n•       Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪      •")
+                            final_score_embed.add_field(name="\u200b", value="• Powered by ColorStack UF ResumeAI •\n•       Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪      •", inline=False)
                             await message.channel.send(embed=final_score_embed)
                         except Exception as e:
                             logging.error(f"Failed to process PDF attachment: {e}")
