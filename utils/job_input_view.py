@@ -21,23 +21,23 @@ class JobInputView(View):
     async def yes_button_callback(self, interaction: discord.Interaction):
         interaction.data['custom_id'] = 'yes'
         
-        interaction_message = await interaction.response.send_message("Please provide the job details. I'll ask you a series of questions.", ephemeral=True)
+        await interaction.response.send_message("Do you have job posting to review for?", ephemeral=True)
 
         try:
             # Step 2: Job Title
-            job_title_message = await self.message.channel.send("📝 **Job Title**: Please enter the job title for this role.")
+            await self.message.channel.send("📝 **Job Title**: Please enter the job title for this role.")
             job_title = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=30)
             
             # Step 3: Company
-            company_message = await self.message.channel.send("🏢 **Company**: Please enter the company for this role.")
+            await self.message.channel.send("🏢 **Company**: Please enter the company for this role.")
             company = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=30)
             
             # Step 4: Minimum Qualifications
-            min_qual_message = await self.message.channel.send("📋 **Minimum Qualifications**: Please enter the minimum qualifications for the job.")
+            await self.message.channel.send("📋 **Minimum Qualifications**: Please enter the minimum qualifications for the job.")
             min_qual = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=45)
             
             # Step 5: Preferred Qualifications
-            pref_qual_message = await self.message.channel.send("⭐ **Preferred Qualifications**: Please enter the preferred qualifications for the job.")
+            await self.message.channel.send("⭐ **Preferred Qualifications**: Please enter the preferred qualifications for the job.")
             pref_qual = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=45)
             
             self.job_details = {
@@ -49,16 +49,6 @@ class JobInputView(View):
             
             # Confirm and process
             await self.message.channel.send(f"Thank you! Here’s the job description you provided:\n\n**Job Title**: {job_title.content}\n**Company**: {company.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}")
-            
-            # # Clean up
-            # await job_title.delete()
-            # await company.delete()
-            # await min_qual.delete()
-            # await pref_qual.delete()
-            # await job_title_message.delete()
-            # await company_message.delete()
-            # await min_qual_message.delete()
-            # await pref_qual_message.delete()
             
             self.stop()
         except asyncio.TimeoutError:
