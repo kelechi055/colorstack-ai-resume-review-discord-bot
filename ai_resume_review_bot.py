@@ -55,6 +55,8 @@ class ResumeBot(commands.Bot):
                             await message.channel.send("No job details provided. Providing general resume formatting feedback.")
                             self.job_details = None
                         
+                        await message_with_view.delete()
+                        
                         gif_url = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif"  # Example GIF URL
                         loading_embed = discord.Embed(
                             title="This could take a minute or two -- our reviewer is hard at work! 😜",
