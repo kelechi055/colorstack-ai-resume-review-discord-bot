@@ -18,7 +18,6 @@ class JobInputView(View):
 
     async def yes_button_callback(self, interaction: discord.Interaction):
         interaction.data['custom_id'] == 'yes'
-        await interaction.response.send_message("Great! Let's get started with the job description comparison.", ephemeral=True)
         
         # Step 2: Job Title
         job_title_message = await self.message.channel.send("🔖 **Job Title**: Please enter the job title for this role.")
