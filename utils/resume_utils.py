@@ -70,14 +70,19 @@ def review_resume(resume: bytes) -> dict:
         }
     ],
     formatting: {
-        font_consistency: python bool,
-        font_feedback: string,
-        alignment: python bool,
-        alignment_feedback: string,
-        spacing: python bool,
-        spacing_feedback: string,
-        headings: python bool,
-        headings_feedback: string,
+        font_consistency: { issue: boolean, feedback: string, score: number },
+        font_choice: { issue: boolean, feedback: string, score: number },
+        font_size: { issue: boolean, feedback: string, score: number },
+        alignment: { issue: boolean, feedback: string, score: number },
+        margins: { issue: boolean, feedback: string, score: number },
+        line_spacing: { issue: boolean, feedback: string, score: number },
+        section_spacing: { issue: boolean, feedback: string, score: number },
+        headings: { issue: boolean, feedback: string, score: number },
+        bullet_points: { issue: boolean, feedback: string, score: number },
+        contact_information: { issue: boolean, feedback: string, score: number },
+        overall_layout: { issue: boolean, feedback: string, score: number },
+        page_utilization: { issue: boolean, feedback: string, score: number },
+        consistency: { issue: boolean, feedback: string, score: number },
         overall_score: number
     }
     """

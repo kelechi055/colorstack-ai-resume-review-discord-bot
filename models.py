@@ -16,29 +16,26 @@ class ResumeProject(BaseModel):
     bullets: list[ResumeBullet] = Field(..., description="List of resume bullets for the project")
     title: str = Field(..., description="Title of the project")
     
+class FormattingAspect(BaseModel):
+    issue: bool = Field(..., description="Whether there is an issue with this aspect")
+    feedback: str = Field(..., description="Feedback on this aspect")
+    score: int = Field(..., ge=1, le=10, description="Score for this aspect")
+
 class FormattingFeedback(BaseModel):
-    font_consistency: bool = Field(..., description="Whether there is an issue with font consistency")
-    font_feedback: str = Field(..., description="Feedback on font consistency")
-    alignment: bool = Field(..., description="Whether there is an issue with alignment")
-    alignment_feedback: str = Field(..., description="Feedback on alignment")
-    spacing: bool = Field(..., description="Whether there is an issue with spacing")
-    spacing_feedback: str = Field(..., description="Feedback on spacing")
-    headings: bool = Field(..., description="Whether there is an issue with headings")
-    headings_feedback: str = Field(..., description="Feedback on headings")
+    font_consistency: FormattingAspect = Field(..., description="Assessment of font consistency")
+    font_choice: FormattingAspect = Field(..., description="Assessment of font choice")
+    font_size: FormattingAspect = Field(..., description="Assessment of font size")
+    alignment: FormattingAspect = Field(..., description="Assessment of text alignment")
+    margins: FormattingAspect = Field(..., description="Assessment of margin settings")
+    line_spacing: FormattingAspect = Field(..., description="Assessment of line spacing")
+    section_spacing: FormattingAspect = Field(..., description="Assessment of spacing between sections")
+    headings: FormattingAspect = Field(..., description="Assessment of heading styles")
+    bullet_points: FormattingAspect = Field(..., description="Assessment of bullet point formatting")
+    contact_information: FormattingAspect = Field(..., description="Assessment of contact information formatting")
+    overall_layout: FormattingAspect = Field(..., description="Assessment of overall layout and visual appeal")
+    page_utilization: FormattingAspect = Field(..., description="Assessment of efficient use of page space")
+    consistency: FormattingAspect = Field(..., description="Assessment of consistency across all sections")
     overall_score: int = Field(..., ge=1, le=10, description="Overall formatting score")
-    
-# class FormattingFeedback(BaseModel):
-#     font_consistency: bool
-#     font_feedback: str = Field(..., description="Feedback on font consistency")
-#     alignment: bool
-#     alignment_feedback: str = Field(..., description="Feedback on text alignment")
-#     spacing: bool
-#     spacing_feedback: str = Field(..., description="Feedback on spacing")
-#     headings: bool
-#     headings_feedback: str = Field(..., description="Feedback on heading styles")
-#     is_one_page: bool
-#     bullets_two_lines_or_less: bool
-#     excessive_white_space: bool
 
 class ResumeFeedback(BaseModel):
     experiences: list[ResumeExperience] = Field(..., description="List of experiences in the resume")

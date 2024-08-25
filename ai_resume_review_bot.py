@@ -106,33 +106,39 @@ class ResumeBot(commands.Bot):
                             # Formatting Feedback Section
                             formatting = feedback.get("formatting")
                             if formatting:
-                                formatting_embed = discord.Embed(title="**Formatting Feedback**", color=0x3498db)
+                                formatting_embed = discord.Embed(title="📄 Resume Formatting Feedback", color=0x3498db)
+                                
+                                # Function to get emoji based on score
+                                def get_score_emoji(score):
+                                    if score >= 9: return "🌟"
+                                    elif score >= 7: return "✨"
+                                    elif score >= 5: return "👍"
+                                    elif score >= 3: return "⚠️"
+                                    else: return "❗"
+
+                                # Add fields for each formatting aspect
+                                for aspect in ['font_consistency', 'font_choice', 'font_size', 'alignment', 'margins', 
+                                            'line_spacing', 'section_spacing', 'headings', 'bullet_points', 
+                                            'contact_information', 'overall_layout', 'page_utilization', 'consistency']:
+                                    if aspect in formatting:
+                                        aspect_data = formatting[aspect]
+                                        emoji = "✅" if not aspect_data['issue'] else "❌"
+                                        score_emoji = get_score_emoji(aspect_data['score'])
+                                        field_name = f"{emoji} {aspect.replace('_', ' ').title()} {score_emoji}"
+                                        field_value = f"{aspect_data['feedback']} (Score: {aspect_data['score']}/10)"
+                                        formatting_embed.add_field(name=field_name, value=field_value, inline=False)
+
+                                # Overall score
+                                overall_score = formatting['overall_score']
+                                overall_emoji = get_score_emoji(overall_score)
                                 formatting_embed.add_field(
-                                    name="Font Consistency", 
-                                    value=f"{'✅' if formatting['font_consistency'] else '❌'} - {formatting['font_feedback']}", 
+                                    name=f"{overall_emoji} Overall Formatting Score",
+                                    value=f"**{overall_score}/10**\n\nKeep improving your resume formatting for better results!",
                                     inline=False
                                 )
-                                formatting_embed.add_field(
-                                    name="Alignment", 
-                                    value=f"{'✅' if formatting['alignment'] else '❌'} - {formatting['alignment_feedback']}", 
-                                    inline=False
-                                )
-                                formatting_embed.add_field(
-                                    name="Spacing", 
-                                    value=f"{'✅' if formatting['spacing'] else '❌'} - {formatting['spacing_feedback']}", 
-                                    inline=False
-                                )
-                                formatting_embed.add_field(
-                                    name="Headings", 
-                                    value=f"{'✅' if formatting['headings'] else '❌'} - {formatting['headings_feedback']}", 
-                                    inline=False
-                                )
-                                formatting_embed.add_field(
-                                    name=f"{round(formatting['overall_score'], 1)}/10", 
-                                    value="", 
-                                    inline=False
-                                )
-                                await message.channel.send(embed=formatting_embed)
+
+                                # Set footer
+                                formatting_embed.set_footer(text="Powered by ResumeAI • Good luck with your job search! 🍀")
 
                             final_score = (avg_projects_final_score + avg_expereinces_final_score + formatting['overall_score']) / 3
                             gif_url = get_gif(final_score)
