@@ -44,10 +44,8 @@ class JobInputView(View):
                 "pref_qual": pref_qual.content
             }
             
-            # # Confirm and process
-            # await self.message.channel.send(f"Thank you! Here’s the job description you provided:\n\n**Job Title**: {job_title.content}\n**Company**: {company.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}")
-            
-            await interaction.response.send_message(f"Thank you! Here’s the job description you provided:\n\n**Job Title**: {job_title.content}\n**Company**: {company.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}", ephemeral=True)
+            # Confirm and process
+            await self.message.channel.send(f"Thank you! Here’s the job description you provided:\n\n**Job Title**: {job_title.content}\n**Company**: {company.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}")
             
             # Clean up
             await job_title.delete()
