@@ -7,6 +7,7 @@ from config import RESUME_REVIEW_CHANNEL_ID, RESUME_REVIEW_TEST_CHANNEL_ID
 from utils.gif_picker import get_gif
 from utils.resume_utils import review_resume
 from utils.score_color import get_score_color
+from utils.score_emoji import get_score_emoji
 
 
 class ResumeBot(commands.Bot):
@@ -54,6 +55,7 @@ class ResumeBot(commands.Bot):
                             
                             total_experiences_score = 0
                             total_projects_score = 0
+                            total_formatting_score = 0
                             total_experiences_bullets = 0
                             total_projects_bullets = 0
 
@@ -106,15 +108,8 @@ class ResumeBot(commands.Bot):
                             # Formatting Feedback Section
                             formatting = feedback.get("formatting")
                             if formatting:
-                                formatting_embed = discord.Embed(title="📄 Resume Formatting Feedback", color=0x3498db)
-                                
-                                # Function to get emoji based on score
-                                def get_score_emoji(score):
-                                    if score >= 9: return "🌟"
-                                    elif score >= 7: return "✨"
-                                    elif score >= 5: return "👍"
-                                    elif score >= 3: return "⚠️"
-                                    else: return "❗"
+                                total_formatting_score = formatting['overall_score']
+                                formatting_embed = discord.Embed(title="📄 Resume Formatting Feedback", color=get_score_color(formatting['overall_score']))
 
                                 # Add fields for each formatting aspect
                                 for aspect in ['font_consistency', 'font_choice', 'font_size', 'alignment', 'margins', 
@@ -138,9 +133,10 @@ class ResumeBot(commands.Bot):
                                 )
 
                                 # Set footer
-                                formatting_embed.set_footer(text="Powered by ResumeAI • Good luck with your job search! 🍀")
+                                formatting_embed.set_footer(text="Powered by ColorStack ResumeAI Bot • Good luck with your job search! 🍀")
+                                await formatting_embed.channel.send(embed=projects_final_embed)
 
-                            final_score = (avg_projects_final_score + avg_expereinces_final_score + formatting['overall_score']) / 3
+                            final_score = (avg_projects_final_score + avg_expereinces_final_score + total_formatting_score) / 3
                             gif_url = get_gif(final_score)
                             # Completion message
                             final_embed = discord.Embed(
