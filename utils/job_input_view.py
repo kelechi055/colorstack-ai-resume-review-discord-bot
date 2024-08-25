@@ -20,7 +20,7 @@ class JobInputView(View):
     async def yes_button_callback(self, interaction: discord.Interaction):
         interaction.data['custom_id'] = 'yes'
         
-        await interaction.response.send_message("Please provide the job details. I'll ask you a series of questions.", ephemeral=True)
+        await interaction.response.send_message(f"Thank you! Here’s the job description you provided:\n\n**Job Title**: {job_title.content}\n**Company**: {company.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}", ephemeral=True)
 
         try:
             # Step 2: Job Title
@@ -46,8 +46,8 @@ class JobInputView(View):
                 "pref_qual": pref_qual.content
             }
             
-            # Confirm and process
-            await self.message.channel.send(f"Thank you! Here’s the job description you provided:\n\n**Job Title**: {job_title.content}\n**Company**: {company.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}")
+            # # Confirm and process
+            # await self.message.channel.send(f"Thank you! Here’s the job description you provided:\n\n**Job Title**: {job_title.content}\n**Company**: {company.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}")
             
             # Clean up
             await job_title.delete()
