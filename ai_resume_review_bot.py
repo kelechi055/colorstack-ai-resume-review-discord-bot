@@ -63,7 +63,7 @@ class ResumeBot(commands.Bot):
                             color=0x0699ab
                         )
                         loading_embed.set_image(url=gif_url)
-                        final_score_embed.add_field(name="\u200b", value="• Powered by ColorStack UF ResumeAI •\n•       Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪      •", inline=False)
+                        loading_embed.add_field(name="\u200b", value="• Powered by ColorStack UF ResumeAI •\n•       Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪      •", inline=False)
                         loading_message = await message.channel.send(embed=loading_embed)
 
                         main_embed = discord.Embed(
@@ -165,7 +165,7 @@ class ResumeBot(commands.Bot):
                                 color=get_score_color(final_score)
                             )
                             final_embed.set_image(url=gif_url)
-                            final_score_embed.add_field(name="\u200b", value="• Powered by ColorStack UF ResumeAI •\n•       Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪      •", inline=False)
+                            final_embed.add_field(name="\u200b", value="• Powered by ColorStack UF ResumeAI •\n•       Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪      •", inline=False)
                             await loading_message.edit(embed=final_embed)
                             
                             final_score_embed = discord.Embed(title=f"Final Score: {round(final_score, 1)}/10", color=get_score_color(final_score))
