@@ -21,19 +21,19 @@ class JobInputView(View):
         await interaction.response.send_message("Great! Let's get started with the job description comparison.", ephemeral=True)
         
         # Step 2: Job Title
-        await self.message.channel.send("🔖 **Job Title**: Please enter the job title for this role.")
+        job_title_message = await self.message.channel.send("🔖 **Job Title**: Please enter the job title for this role.")
         job_title = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=60)
         
         # Step 3: Company
-        await self.message.channel.send("🔖 **Company**: Please enter the company for this role.")
+        company_message = await self.message.channel.send("🔖 **Company**: Please enter the company for this role.")
         company = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=60)
         
         # Step 4: Minimum Qualifications
-        await self.message.channel.send("💼 **Minimum Qualifications**: Please enter the minimum qualifications for the job.")
+        min_qual_message = await self.message.channel.send("💼 **Minimum Qualifications**: Please enter the minimum qualifications for the job.")
         min_qual = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
         
         # Step 5: Preferred Qualifications
-        await self.message.channel.send("📅 **Preferred Qualifications**: Please enter the preferred qualifications for the job.")
+        pref_qual_message = await self.message.channel.send("📅 **Preferred Qualifications**: Please enter the preferred qualifications for the job.")
         pref_qual = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
         
         self.job_details = {
@@ -44,7 +44,16 @@ class JobInputView(View):
         }
         
         # Confirm and process
-        await self.message.channel.send(f"Thank you! Here’s what you provided:\n\n**Job Title**: {job_title.content}\n**Company**: {company.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}")
+        await self.message.channel.send(f"Thank you! Here’s the job description you provided:\n\n**Job Title**: {job_title.content}\n**Company**: {company.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}")
+        
+        await job_title_message.delete()
+        await company_message.delete()
+        await min_qual_message.delete()
+        await pref_qual_message.delete()
+        await job_title.delete()
+        await company.delete()
+        await min_qual.delete()
+        await pref_qual.delete()
         
         return
 
