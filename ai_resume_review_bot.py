@@ -49,21 +49,12 @@ class ResumeBot(commands.Bot):
                         
                         await view.wait()
                         
-                        # Wait for user response on job details input
-                        def check(interaction):
-                            return interaction.message.id == message_with_view.id and interaction.user == message.author
-
-                        try:
-                            interaction = await self.wait_for('interaction', check=check, timeout=300)
-                            if interaction.data['custom_id'] == 'yes':
-                                self.job_details = await view.yes_button_callback(interaction)
-                                # Process job details here or pass to another function
-                                await self.message.channel.send(f"Received job details:\n{self.job_details}")
-
-                            elif interaction.data['custom_id'] == 'no':
-                                await interaction.response.send_message("No problem! I'll just provide general resume formatting feedback.", ephemeral=True)
-                        except asyncio.TimeoutError:
-                            await message.channel.send("The request timed out. I'll just provide general resume formatting feedback.")
+                        if view.job_details:
+                            self.job_details = view.job_details
+                            await message.channel.send(f"Received job details:\n{self.job_details}")
+                        else:
+                            await message.channel.send("No job details provided. Providing general resume formatting feedback.")
+                            self.job_details = None
                         
                         gif_url = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif"  # Example GIF URL
                         loading_embed = discord.Embed(
@@ -82,7 +73,10 @@ class ResumeBot(commands.Bot):
                         await message.channel.send(embed=main_embed)
                         pdf_bytes = await attachment.read()
                         try:
-                            feedback = review_resume(resume=pdf_bytes, jobe_title=self.job_details["job_title"], company_name=self.job_details["company"], min_qual=self.job_details["min_qual"], pref_qual=self.job_details["pref_qual"])
+                            if self.job_details:
+                                feedback = review_resume(resume=pdf_bytes, job_title=self.job_details["job_title"], company_name=self.job_details["company"], min_qual=self.job_details["min_qual"], pref_qual=self.job_details["pref_qual"])
+                            else:
+                                feedback = review_resume(resume=pdf_bytes)
                             
                             total_experiences_score = 0
                             total_projects_score = 0
