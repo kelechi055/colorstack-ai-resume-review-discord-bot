@@ -41,11 +41,13 @@ class ResumeBot(commands.Bot):
                         # Sending the initial feedback embed
                         main_embed = discord.Embed(
                             title="AI Resume Feedback",
-                            description="Would you like to proceed with the review?",
+                            description="Would you like to input a job to compare your resume to?",
                             color=0x0699ab
                         )
                         view = JobInputView(self, message)
                         message_with_view = await message.channel.send(embed=main_embed, view=view)
+                        
+                        await view.wait()
                         
                         # Wait for user response on job details input
                         def check(interaction):
