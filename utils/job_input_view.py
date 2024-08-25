@@ -39,8 +39,8 @@ class JobInputView(View):
         self.job_details = {
             "job_title": job_title.content,
             "company": company.content,
-            "minimum_qualifications": min_qual.content,
-            "preferred_qualifications": pref_qual.content
+            "min_qual": min_qual.content,
+            "pref_qual": pref_qual.content
         }
         
         # Confirm and process
