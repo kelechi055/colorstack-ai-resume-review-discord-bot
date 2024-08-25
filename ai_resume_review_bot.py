@@ -41,7 +41,7 @@ class ResumeBot(commands.Bot):
                             color=0x0699ab
                         )
                         loading_embed.set_image(url=gif_url)
-                        loading_embed.set_footer(text="• Powered by ColorStack ResumeAI Bot •")
+                        loading_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
                         loading_message = await message.channel.send(embed=loading_embed)
 
                         main_embed = discord.Embed(
@@ -146,7 +146,7 @@ class ResumeBot(commands.Bot):
                             
                             final_score_embed = discord.Embed(title=f"Final Score: {round(final_score, 1)}/10", color=get_score_color(final_score))
                             final_score_embed.set_image(url=gif_url)
-                            final_score_embed.set_footer(text="• Powered by ColorStack ResumeAI Bot •")
+                            final_score_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
                             await message.channel.send(embed=final_score_embed)
                         except Exception as e:
                             logging.error(f"Failed to process PDF attachment: {e}")
