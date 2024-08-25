@@ -102,8 +102,39 @@ class ResumeBot(commands.Bot):
                             )
                             projects_final_embed.add_field(name=f"{round(avg_projects_final_score, 1)}/10", value="", inline=False)
                             await message.channel.send(embed=projects_final_embed)
+                            
+                            # Formatting Feedback Section
+                            formatting = feedback.get("formatting")
+                            if formatting:
+                                formatting_embed = discord.Embed(title="**Formatting Feedback**", color=0x3498db)
+                                formatting_embed.add_field(
+                                    name="Font Consistency", 
+                                    value=f"{'✅' if formatting['font_consistency'] else '❌'} - {formatting['font_feedback']}", 
+                                    inline=False
+                                )
+                                formatting_embed.add_field(
+                                    name="Alignment", 
+                                    value=f"{'✅' if formatting['alignment'] else '❌'} - {formatting['alignment_feedback']}", 
+                                    inline=False
+                                )
+                                formatting_embed.add_field(
+                                    name="Spacing", 
+                                    value=f"{'✅' if formatting['spacing'] else '❌'} - {formatting['spacing_feedback']}", 
+                                    inline=False
+                                )
+                                formatting_embed.add_field(
+                                    name="Headings", 
+                                    value=f"{'✅' if formatting['headings'] else '❌'} - {formatting['headings_feedback']}", 
+                                    inline=False
+                                )
+                                formatting_embed.add_field(
+                                    name=f"{round(formatting['overall_score'], 1)}/10", 
+                                    value="", 
+                                    inline=False
+                                )
+                                await message.channel.send(embed=formatting_embed)
 
-                            final_score = (avg_projects_final_score + avg_expereinces_final_score) / 2
+                            final_score = (avg_projects_final_score + avg_expereinces_final_score + formatting['overall_score']) / 3
                             gif_url = get_gif(final_score)
                             # Completion message
                             final_embed = discord.Embed(

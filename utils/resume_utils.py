@@ -14,6 +14,8 @@ def review_resume(resume: bytes) -> dict:
     - It talks about achievements.
     - It is concise. No fluff.
     - If possible, it quantifies impact. Don't be as critical about this for projects as you are for work experiences.
+    - Two lines or less.
+    - Does not have excessive white space.
     Here are your guidelines for giving feedback:
     - Be kind.
     - Be specific.
@@ -25,6 +27,12 @@ def review_resume(resume: bytes) -> dict:
     - If the original bullet point is a 10/10, do NOT suggest any rewrites.
     - If the original bullet point is not a 10/10, suggest 1-2 rewrite options.
     - Be 1000% certain that the rewrites address all of your feedback.
+    Formatting guidelines:
+    - Ensure consistency in font size and type.
+    - Align bullet points and headings properly.
+    - Check for sufficient spacing between sections.
+    - Ensure clear and readable section headings.
+    - Highlight important details without overwhelming with too much text.
     """
 
     user_prompt = """
@@ -55,7 +63,26 @@ def review_resume(resume: bytes) -> dict:
             ],
             title: string
         }
-    ]
+    ],
+    formatting: {
+        font_consistency: {
+            issue: boolean,
+            feedback: string
+        },
+        alignment: {
+            issue: boolean,
+            feedback: string
+        },
+        spacing: {
+            issue: boolean,
+            feedback: string
+        },
+        headings: {
+            issue: boolean,
+            feedback: string
+        },
+        overall_score: number
+    }
     """
 
     image_base64 = convert_pdf_to_image(resume)

@@ -15,7 +15,19 @@ class ResumeExperience(BaseModel):
 class ResumeProject(BaseModel):
     bullets: list[ResumeBullet] = Field(..., description="List of resume bullets for the project")
     title: str = Field(..., description="Title of the project")
+    
+class FormattingFeedback(BaseModel):
+    font_consistency: bool = Field(..., description="Whether there is an issue with font consistency")
+    font_feedback: str = Field(..., description="Feedback on font consistency")
+    alignment: bool = Field(..., description="Whether there is an issue with alignment")
+    alignment_feedback: str = Field(..., description="Feedback on alignment")
+    spacing: bool = Field(..., description="Whether there is an issue with spacing")
+    spacing_feedback: str = Field(..., description="Feedback on spacing")
+    headings: bool = Field(..., description="Whether there is an issue with headings")
+    headings_feedback: str = Field(..., description="Feedback on headings")
+    overall_score: int = Field(..., ge=1, le=10, description="Overall formatting score")
 
 class ResumeFeedback(BaseModel):
     experiences: list[ResumeExperience] = Field(..., description="List of experiences in the resume")
     projects: list[ResumeProject] = Field(..., description="List of projects in the resume")
+    formatting: FormattingFeedback = Field(..., description="Feedback on the resume's formatting")
