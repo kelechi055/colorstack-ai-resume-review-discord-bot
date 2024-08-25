@@ -70,22 +70,14 @@ def review_resume(resume: bytes) -> dict:
         }
     ],
     formatting: {
-        font_consistency: {
-            issue: python bool,
-            feedback: string
-        },
-        alignment: {
-            issue: python bool,
-            feedback: string
-        },
-        spacing: {
-            issue: python bool,
-            feedback: string
-        },
-        headings: {
-            issue: python bool,
-            feedback: string
-        },
+        font_consistency: python bool,
+        font_feedback: string,
+        alignment: python bool,
+        alignment_feedback: string,
+        spacing: python bool,
+        spacing_feedback: string,
+        headings: python bool,
+        headings_feedback: string,
         overall_score: number
     }
     """
