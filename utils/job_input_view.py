@@ -24,14 +24,14 @@ class JobInputView(View):
         
         # Step 3: Minimum Qualifications
         await self.message.channel.send("💼 **Minimum Qualifications**: Please enter the minimum qualifications for the job.")
-        skills = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
+        min_qual = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
         
         # Step 4: Preferred Qualifications
         await self.message.channel.send("📅 **Preferred Qualifications**: Please enter the preferred qualifications for the job.")
-        experience = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
+        pref_qual = await self.bot.wait_for('message', check=lambda m: m.author == self.message.author, timeout=120)
         
         # Confirm and process
-        await self.message.channel.send(f"Thank you! Here’s what you provided:\n\n**Job Title**: {job_title.content}\n**Responsibilities**: {responsibilities.content}\n**Required Skills**: {skills.content}\n**Experience**: {experience.content}\n**Education**: {education.content}")
+        await self.message.channel.send(f"Thank you! Here’s what you provided:\n\n**Job Title**: {job_title.content}\n**Minimum Qualifications**: {min_qual.content}\n**Preferred Qualifications**: {pref_qual.content}")
 
     async def no_button_callback(self, interaction: discord.Interaction):
         await interaction.response.send_message("No problem! I'll just provide general resume formatting feedback.", ephemeral=True)
