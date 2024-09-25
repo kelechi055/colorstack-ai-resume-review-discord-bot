@@ -3,11 +3,11 @@ import logging
 from pydantic import ValidationError
 from models import ResumeFeedback
 from utils.anthropic_utils import get_chat_completion
-from utils.pdf_utils import convert_pdf_to_image
+from utils.pdf_utils import analyze_font_consistency, convert_pdf_to_image, extract_text_and_formatting
 
 def review_resume(resume: bytes, job_title: str = None, company: str = None, min_qual: str = None, pref_qual: str = None) -> dict:
     job_details = {
-        "job_title": "Softare Engineer" if job_title is None else job_title,
+        "job_title": "Software Engineer" if job_title is None else job_title,
         "company": "Google" if company is None else company,
         "min_qual": "Education: Currently pursuing a Bachelor's or Master's degree in Computer Science, a related technical field, or equivalent practical experience.\nProgramming Skills: Proficiency in at least one programming language (e.g., Python, Java, C++, Go).\nComputer Science Fundamentals: Solid understanding of data structures, algorithms, and complexity analysis.\nTechnical Experience: Experience with software development, demonstrated through personal projects, coursework, or internships.\nProblem-Solving Ability: Strong analytical and problem-solving skills, with the ability to apply theoretical concepts to practical scenarios.\nCollaboration and Communication: Ability to work effectively in a team environment, with strong written and verbal communication skills." if min_qual is None else min_qual,
         "pref_qual": "Advanced Coursework: Completed coursework or have practical experience in advanced computer science topics such as distributed systems, machine learning, or security.\nTechnical Experience: Internships or co-op experience in a software development role, or significant contributions to open-source projects.\nCoding Competitions: Participation in coding competitions or technical challenges, such as competitive programming or hackathons.\nProject Experience: Demonstrated experience with complex software projects, either through internships, personal projects, or academic coursework.\nSoft Skills: Proven ability to take initiative, manage multiple tasks effectively, and adapt to new challenges in a fast-paced environment.\nLeadership and Impact: Experience in leadership roles, or demonstrated impact through technical or non-technical contributions." if pref_qual is None else pref_qual
@@ -52,12 +52,24 @@ def review_resume(resume: bytes, job_title: str = None, company: str = None, min
     - Be particularly critical of resumes that include unprofessional language, irrelevant experiences, or inappropriate formatting.
     """
 
+    # Extract text and formatting information
+    extracted_data = extract_text_and_formatting(resume)
+    resume_text = extracted_data["text"]
+    formatting_info = extracted_data["formatting"]
+
+    # Analyze font consistency
+    font_consistency_feedback = analyze_font_consistency(formatting_info)
+
     user_prompt = f"""
     Please review this resume for the role of {job_title} at {company}. 
     The job's minimum qualifications are as follows:
     {min_qual}
     The job's preferred qualifications are as follows:
     {pref_qual}
+    The resume text is as follows:
+    {resume_text}
+    Font consistency feedback:
+    {font_consistency_feedback['feedback']}
     Only return JSON that respects the following schema:
     experiences: [
         {{
