@@ -34,6 +34,7 @@ class FormattingFeedback(BaseModel):
     contact_information: FormattingAspect = Field(..., description="Assessment of contact information formatting")
     overall_layout: FormattingAspect = Field(..., description="Assessment of overall layout and visual appeal")
     page_utilization: FormattingAspect = Field(..., description="Assessment of efficient use of page space")
+    is_single_page: FormattingAspect = Field(..., description="Assessment of whether the resume is single-page")
     consistency: FormattingAspect = Field(..., description="Assessment of consistency across all sections")
     overall_score: int = Field(..., ge=1, le=10, description="Overall formatting score")
 

@@ -30,7 +30,7 @@ class ResumeBot(commands.Bot):
             return
 
         # Verify that the message is part of the correct forum channel
-        if isinstance(message.channel, discord.Thread) and message.channel.parent_id == RESUME_REVIEW_TEST_CHANNEL_ID or message.channel.parent_id == RESUME_REVIEW_CHANNEL_ID:
+        if isinstance(message.channel, discord.Thread) and message.channel.parent_id == RESUME_REVIEW_CHANNEL_ID:
             logging.info(f"Message received in the correct resume review channel with ID: {message.channel.parent_id}")
 
             if message.attachments:
@@ -140,7 +140,7 @@ class ResumeBot(commands.Bot):
                                 # Add fields for each formatting aspect
                                 for aspect in ['font_consistency', 'font_choice', 'font_size', 'alignment', 'margins', 
                                             'line_spacing', 'section_spacing', 'headings', 'bullet_points', 
-                                            'contact_information', 'overall_layout', 'page_utilization', 'consistency']:
+                                            'contact_information', 'overall_layout', 'page_utilization', 'is_single_page', 'consistency']:
                                     if aspect in formatting:
                                         aspect_data = formatting[aspect]
                                         emoji = "✅" if not aspect_data['issue'] else "❌"

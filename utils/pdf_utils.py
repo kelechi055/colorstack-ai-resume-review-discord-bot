@@ -49,3 +49,7 @@ def analyze_font_consistency(formatting_info):
             "feedback": "Font is consistent throughout the document.",
             "score": 10
         }
+
+def check_single_page(file: bytes) -> bool:
+    with fitz.open(stream=file, filetype="pdf") as doc:
+        return len(doc) == 1

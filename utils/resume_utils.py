@@ -3,7 +3,7 @@ import logging
 from pydantic import ValidationError
 from models import ResumeFeedback
 from utils.anthropic_utils import get_chat_completion
-from utils.pdf_utils import analyze_font_consistency, convert_pdf_to_image, extract_text_and_formatting
+from utils.pdf_utils import analyze_font_consistency, check_single_page, convert_pdf_to_image, extract_text_and_formatting
 
 def review_resume(resume: bytes, job_title: str = None, company: str = None, min_qual: str = None, pref_qual: str = None) -> dict:
     job_details = {
@@ -51,6 +51,8 @@ def review_resume(resume: bytes, job_title: str = None, company: str = None, min
     - Highlight important details without overwhelming with too much text.
     - Be particularly critical of resumes that include unprofessional language, irrelevant experiences, or inappropriate formatting.
     """
+    # Check if the resume is a single page
+    is_single_page = check_single_page(resume)
 
     # Extract text and formatting information
     extracted_data = extract_text_and_formatting(resume)
@@ -59,6 +61,24 @@ def review_resume(resume: bytes, job_title: str = None, company: str = None, min
 
     # Analyze font consistency
     font_consistency_feedback = analyze_font_consistency(formatting_info)
+
+    # Adjust feedback based on page count
+    if not is_single_page:
+        logging.warning("The resume is more than one page.")
+        additional_feedback = "Note: Your resume exceeds one page. Consider condensing your content to fit on a single page for better readability."
+        page_utilization_score = 4  # Example score for multi-page resumes
+        is_single_page_feedback = "The resume is not a single page."
+    else:
+        additional_feedback = "Your resume is appropriately formatted to fit on a single page."
+        page_utilization_score = 10  # Example score for single-page resumes
+        is_single_page_feedback = "The resume is a single page."
+
+    # Include is_single_page feedback in the formatting section
+    formatting_info['is_single_page'] = {
+        "issue": not is_single_page,  # Adjust based on your logic
+        "feedback": is_single_page_feedback,
+        "score": page_utilization_score
+    }
 
     user_prompt = f"""
     Please review this resume for the role of {job_title} at {company}. 
@@ -70,6 +90,7 @@ def review_resume(resume: bytes, job_title: str = None, company: str = None, min
     {resume_text}
     Font consistency feedback:
     {font_consistency_feedback['feedback']}
+    Additional feedback: {additional_feedback}
     Only return JSON that respects the following schema:
     experiences: [
         {{
@@ -111,6 +132,7 @@ def review_resume(resume: bytes, job_title: str = None, company: str = None, min
         contact_information: {{ issue: boolean, feedback: string, score: number }},
         overall_layout: {{ issue: boolean, feedback: string, score: number }},
         page_utilization: {{ issue: boolean, feedback: string, score: number }},
+        is_single_page: {{ issue: boolean, feedback: string, score: number }},
         consistency: {{ issue: boolean, feedback: string, score: number }},
         overall_score: number
     }}
