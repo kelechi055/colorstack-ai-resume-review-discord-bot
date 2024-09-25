@@ -7,7 +7,6 @@ load_dotenv()
 # Environment Variables
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
-RESUME_REVIEW_TEST_CHANNEL_ID = int(os.getenv('RESUME_REVIEW_TEST_CHANNEL_ID'))  # Set this to your resume review test channel ID
 RESUME_REVIEW_CHANNEL_ID = int(os.getenv('RESUME_REVIEW_CHANNEL_ID'))  # Set this to your resume review channel ID
 HIGH_SCORE_COLOR = 0x00ff00
 GOOD_SCORE_COLOR = 0x4BFFFF

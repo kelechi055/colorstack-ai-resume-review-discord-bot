@@ -56,8 +56,29 @@ def review_resume(resume: bytes, job_title: str = None, company: str = None, min
 
     # Extract text and formatting information
     extracted_data = extract_text_and_formatting(resume)
+    logging.debug(f"Extracted data: {extracted_data}")
+
+    # Ensure extracted_data is a dictionary
+    if not isinstance(extracted_data, dict):
+        logging.error("Extracted data is not a dictionary.")
+        raise ValueError("Extracted data must be a dictionary.")
+    
     resume_text = extracted_data["text"]
     formatting_info = extracted_data["formatting"]
+
+    # Example of processing formatting_info
+    for index, item in enumerate(formatting_info):
+        # Ensure item is a dictionary
+        if isinstance(item, dict):
+            text = item.get("text")  # Use .get() to avoid KeyError
+            font = item.get("font")  # Use .get() to avoid KeyError
+            size = item.get("size")  # Use .get() to avoid KeyError
+            bbox = item.get("bbox")  # Use .get() to avoid KeyError
+            
+            # Log the extracted formatting information
+            logging.info(f"Formatting info [{index}]: text='{text}', font='{font}', size={size}, bbox={bbox}")
+        else:
+            logging.error(f"Formatting info item at index {index} is not a dictionary: {item}")
 
     # Analyze font consistency
     font_consistency_feedback = analyze_font_consistency(formatting_info)
@@ -65,20 +86,12 @@ def review_resume(resume: bytes, job_title: str = None, company: str = None, min
     # Adjust feedback based on page count
     if not is_single_page:
         logging.warning("The resume is more than one page.")
-        additional_feedback = "Note: Your resume exceeds one page. Consider condensing your content to fit on a single page for better readability."
-        page_utilization_score = 4  # Example score for multi-page resumes
-        is_single_page_feedback = "The resume is not a single page."
+        additional_feedback = "Your resume exceeds one page. Consider condensing your content to fit on a single page for better readability."
     else:
         additional_feedback = "Your resume is appropriately formatted to fit on a single page."
-        page_utilization_score = 10  # Example score for single-page resumes
-        is_single_page_feedback = "The resume is a single page."
 
-    # Include is_single_page feedback in the formatting section
-    formatting_info['is_single_page'] = {
-        "issue": not is_single_page,  # Adjust based on your logic
-        "feedback": is_single_page_feedback,
-        "score": page_utilization_score
-    }
+
+    logging.info("FONT CONSISTENCY: ", font_consistency_feedback['feedback'])
 
     user_prompt = f"""
     Please review this resume for the role of {job_title} at {company}. 
@@ -86,8 +99,6 @@ def review_resume(resume: bytes, job_title: str = None, company: str = None, min
     {min_qual}
     The job's preferred qualifications are as follows:
     {pref_qual}
-    The resume text is as follows:
-    {resume_text}
     Font consistency feedback:
     {font_consistency_feedback['feedback']}
     Additional feedback: {additional_feedback}
@@ -132,7 +143,7 @@ def review_resume(resume: bytes, job_title: str = None, company: str = None, min
         contact_information: {{ issue: boolean, feedback: string, score: number }},
         overall_layout: {{ issue: boolean, feedback: string, score: number }},
         page_utilization: {{ issue: boolean, feedback: string, score: number }},
-        is_single_page: {{ issue: boolean, feedback: string, score: number }},
+        is_single_page: {{ issue: {not is_single_page}, feedback: {additional_feedback}, score: {10 if is_single_page else 0} }},
         consistency: {{ issue: boolean, feedback: string, score: number }},
         overall_score: number
     }}
@@ -153,6 +164,8 @@ def review_resume(resume: bytes, job_title: str = None, company: str = None, min
     try:
         completion = get_chat_completion(max_tokens=8192, messages=messages, system=system_prompt, temperature=0.25)
         result = json.loads(completion)
+        logging.info(f"Result structure: {result}")
+        logging.info(result['content'][0])
         logging.info(result['content'][0]['text'])
         resume_feedback = ResumeFeedback(**json.loads(result['content'][0]['text']))
         logging.info("Resume reviewed and feedback generated successfully")

@@ -4,7 +4,7 @@ import random
 import discord
 from discord.ext import commands
 
-from config import RESUME_REVIEW_CHANNEL_ID, RESUME_REVIEW_TEST_CHANNEL_ID
+from config import RESUME_REVIEW_CHANNEL_ID
 from utils.gif_picker import get_gif
 from utils.job_input_view import JobInputView
 from utils.resume_utils import review_resume
@@ -16,6 +16,7 @@ class ResumeBot(commands.Bot):
     def __init__(self, command_prefix, intents):
         super().__init__(command_prefix, intents=intents)
         self.job_details=None
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
         
 
     async def on_ready(self):
@@ -78,28 +79,54 @@ class ResumeBot(commands.Bot):
                                 feedback = review_resume(resume=pdf_bytes, job_title=self.job_details["job_title"], company=self.job_details["company"], min_qual=self.job_details["min_qual"], pref_qual=self.job_details["pref_qual"])
                             else:
                                 feedback = review_resume(resume=pdf_bytes)
-                            
+
+                            # Log the feedback structure
+                            logging.info(f"Feedback structure: {feedback}")
+
+                            # Check if feedback is a dictionary
+                            if not isinstance(feedback, dict):
+                                logging.error("Feedback is not a dictionary.")
+                                return
+
+                            # Access experiences safely
+                            experiences = feedback.get("experiences", [])
+                            if not isinstance(experiences, list):
+                                logging.error("Expected 'experiences' to be a list.")
+                                return
+
+                            logging.info(f"Experiences: {experiences}")  # Log the experiences
+
                             total_experiences_score = 0
                             total_projects_score = 0
                             total_formatting_score = 0
                             total_experiences_bullets = 0
                             total_projects_bullets = 0
 
-                            # Experiences Section
-                            for experience in feedback.get("experiences", []):
-                                experience_embed = discord.Embed(title=f"**Experience at {experience['company']} - {experience['role']}**\n", color=0xe5e7eb)
-                                await message.channel.send(embed=experience_embed)
-                                for idx, bullet in enumerate(experience['bullets']):
-                                    total_experiences_score += bullet['score']
-                                    total_experiences_bullets += 1
-                                    rewrites = "\n\n> ".join(bullet['rewrites']) if bullet['rewrites'] else None
-                                    bullet_embed = discord.Embed(title=f"{bullet['score']}/10", color=get_score_color(bullet['score']))
-                                    bullet_embed.add_field(name="", value=f"> *{bullet['content']}*\n", inline=False)
-                                    bullet_embed.add_field(name="Feedback", value=f"> {bullet['feedback']}\n", inline=False)
-                                    if rewrites:
-                                        bullet_embed.add_field(name="Suggestions ", value=f"> {rewrites}", inline=False)
-                                    await message.channel.send(embed=bullet_embed)
-                                    
+                            for experience in experiences:
+                                if isinstance(experience, dict):  # Ensure experience is a dictionary
+                                    experience_embed = discord.Embed(title=f"**Experience at {experience.get('company', 'Unknown')} - {experience.get('role', 'Unknown')}**\n", color=0xe5e7eb)
+                                    await message.channel.send(embed=experience_embed)
+                                    bullets = experience.get('bullets', [])
+                                    if not isinstance(bullets, list):
+                                        logging.error("Expected 'bullets' to be a list.")
+                                        continue
+
+                                    for idx, bullet in enumerate(bullets):  # Use .get() to avoid KeyError
+                                        if isinstance(bullet, dict):  # Ensure bullet is a dictionary
+                                            total_experiences_score += bullet.get('score', 0)  # Use .get() to avoid KeyError
+                                            total_experiences_bullets += 1
+                                            rewrites = "\n\n> ".join(bullet.get('rewrites', [])) if bullet.get('rewrites') else None
+                                            bullet_embed = discord.Embed(title=f"{bullet.get('score', 0)}/10", color=get_score_color(bullet.get('score', 0)))
+                                            bullet_embed.add_field(name="", value=f"> *{bullet.get('content', 'No content')}*\n", inline=False)
+                                            bullet_embed.add_field(name="Feedback", value=f"> {bullet.get('feedback', 'No feedback')}\n", inline=False)
+                                            if rewrites:
+                                                bullet_embed.add_field(name="Suggestions ", value=f"> {rewrites}", inline=False)
+                                            await message.channel.send(embed=bullet_embed)
+                                        else:
+                                            logging.error("Bullet item is not a dictionary.")
+                                else:
+                                    logging.error("Experience item is not a dictionary.")
+
                             avg_expereinces_final_score = 0 if total_experiences_bullets == 0 else total_experiences_score / total_experiences_bullets
                             expereinces_final_embed = discord.Embed(
                                 title="Experience Section Score",
@@ -130,6 +157,8 @@ class ResumeBot(commands.Bot):
                             )
                             projects_final_embed.add_field(name=f"{round(avg_projects_final_score, 1)}/10", value="", inline=False)
                             await message.channel.send(embed=projects_final_embed)
+
+                            logging.info("Formatting: ", feedback)
                             
                             # Formatting Feedback Section
                             formatting = feedback.get("formatting")

@@ -19,37 +19,58 @@ def extract_text_and_formatting(file: bytes) -> dict:
         formatting_info = []
         for page in doc:
             text += page.get_text()
-            # Extract formatting details for each text block
-            for block in page.get_text("dict")["blocks"]:
-                if "lines" in block:
-                    for line in block["lines"]:
-                        for span in line["spans"]:
-                            formatting_info.append({
-                                "text": span["text"],
-                                "font": span["font"],
-                                "size": span["size"],
-                                "bbox": span["bbox"],
-                            })
-    return {"text": text, "formatting": formatting_info}
+            page_dict = page.get_text("dict")
+            
+            # Log the entire structure of the page_dict
+            logging.info(f"Page dict structure: {page_dict}")
+
+            # Check if 'blocks' exists and is a list
+            if "blocks" in page_dict:
+                if isinstance(page_dict["blocks"], list):
+                    for block in page_dict["blocks"]:
+                        if "lines" in block:
+                            for line in block["lines"]:
+                                for span in line["spans"]:
+                                    formatting_info.append({
+                                        "text": span["text"],
+                                        "font": span["font"],
+                                        "size": span["size"],
+                                        "bbox": span["bbox"],
+                                    })
+                else:
+                    logging.error("'blocks' is not a list.")
+            else:
+                logging.warning("No valid 'blocks' found in page dict.")
+                
+    result = {"text": text, "formatting": formatting_info}
+    logging.info(f"Extracted data: {result}")
+    return result
 
 def analyze_font_consistency(formatting_info):
     font_set = set()
     for item in formatting_info:
+        logging.info(f"ITEM: {item['font']}")
         font_set.add(item["font"])
 
     if len(font_set) > 1:
+        feedback = f"Multiple fonts detected: {', '.join(font_set)}. Consider using a single font for consistency."
+        logging.warning(feedback)
         return {
             "issue": True,
-            "feedback": f"Multiple fonts detected: {', '.join(font_set)}. Consider using a single font for consistency.",
+            "feedback": feedback,
             "score": 4
         }
     else:
+        feedback = "Font is consistent throughout the document."
+        logging.info(feedback)
         return {
             "issue": False,
-            "feedback": "Font is consistent throughout the document.",
+            "feedback": feedback,
             "score": 10
         }
 
 def check_single_page(file: bytes) -> bool:
     with fitz.open(stream=file, filetype="pdf") as doc:
-        return len(doc) == 1
+        page_count = len(doc)
+        logging.info(f"Detected {page_count} pages in the PDF.")
+        return page_count == 1
