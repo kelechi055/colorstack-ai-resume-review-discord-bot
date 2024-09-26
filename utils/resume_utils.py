@@ -70,10 +70,10 @@ def review_resume(resume: bytes, job_title: str = None, company: str = None, min
     for index, item in enumerate(formatting_info):
         # Ensure item is a dictionary
         if isinstance(item, dict):
-            text = item.get("text")  # Use .get() to avoid KeyError
-            font = item.get("font")  # Use .get() to avoid KeyError
-            size = item.get("size")  # Use .get() to avoid KeyError
-            bbox = item.get("bbox")  # Use .get() to avoid KeyError
+            text = item.get("text")
+            font = item.get("font")
+            size = item.get("size")
+            bbox = item.get("bbox")
             
             # Log the extracted formatting information
             logging.info(f"Formatting info [{index}]: text='{text}', font='{font}', size={size}, bbox={bbox}")
@@ -99,8 +99,8 @@ def review_resume(resume: bytes, job_title: str = None, company: str = None, min
     {min_qual}
     The job's preferred qualifications are as follows:
     {pref_qual}
-    Font consistency feedback:
-    {font_consistency_feedback['feedback']}
+    Here are the extracted text elements with their bounding box information:
+    {json.dumps(extracted_data, indent=2)}
     Additional feedback: {additional_feedback}
     Only return JSON that respects the following schema:
     experiences: [
