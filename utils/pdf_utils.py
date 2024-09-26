@@ -54,7 +54,7 @@ def analyze_font_consistency(formatting_info):
 
     if len(font_set) > 1:
         feedback = f"Multiple fonts detected: {', '.join(font_set)}. Consider using a single font for consistency."
-        logging.warning(feedback)
+        logging.info(feedback)
         return {
             "issue": True,
             "feedback": feedback,
