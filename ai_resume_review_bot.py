@@ -186,7 +186,7 @@ class ResumeBot(commands.Bot):
                                 overall_score_embed.add_field(name=f"{round(overall_score,1)}/10", value="", inline=False)
                                 await message.channel.send(embed=overall_score_embed)
 
-                            final_score = (avg_projects_final_score + avg_expereinces_final_score + total_formatting_score) / 3
+                            final_score = (avg_projects_final_score + avg_expereinces_final_score + total_formatting_score) / 3.0  # Ensure float division
                             gif_url = get_gif(final_score)
                             # Completion message
                             final_embed = discord.Embed(
