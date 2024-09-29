@@ -69,16 +69,18 @@ class ResumeBot(commands.Bot):
 
                         main_embed = discord.Embed(
                             title="AI Resume Feedback",
-                            description="Currently, the resume review tool will only give feedback on your bullet points for experiences and projects, as well as, resume formatting. This does not serve as a complete resume review, so you should still seek feedback from peers. Additionally, this tool relies on AI and may not always provide the best feedback, so take it with a grain of salt.\n\n**Disclaimer:** Any suggestions provided are purely examples and should not be added as-is without verification of accuracy.",
+                            description="Currently, the resume review tool will only give feedback on your bullet points for experiences and projects, as well as, resume formatting. This does not serve as a complete resume review, so you should still seek feedback from peers. Additionally, this tool relies on AI and may not always provide the best feedback, so take it with a grain of salt.\n\n**Disclaimer:** Any suggestions provided are purely examples and should not be added as-is without verification of accuracy.\n\n**Note:** We are comparing your resume to Jake's resume for formatting feedback. You can view Jake's resume [here](https://www.overleaf.com/latex/templates/jakes-resume/syzfjbzwjncs).",
                             color=0x0699ab
                         )
                         await message.channel.send(embed=main_embed)
-                        pdf_bytes = await attachment.read()
+                        user_resume_bytes = await attachment.read()
+                        jake_resume_bytes = open("resumes/jakes-resume.pdf", "rb").read()
+
                         try:
                             if self.job_details:
-                                feedback = review_resume(resume=pdf_bytes, job_title=self.job_details["job_title"], company=self.job_details["company"], min_qual=self.job_details["min_qual"], pref_qual=self.job_details["pref_qual"])
+                                feedback = review_resume(resume_user=user_resume_bytes, resume_jake=jake_resume_bytes, job_title=self.job_details["job_title"], company=self.job_details["company"], min_qual=self.job_details["min_qual"], pref_qual=self.job_details["pref_qual"])
                             else:
-                                feedback = review_resume(resume=pdf_bytes)
+                                feedback = review_resume(resume_user=user_resume_bytes, resume_jake=jake_resume_bytes)
 
                             # Log the feedback structure
                             logging.info(f"Feedback structure: {feedback}")
@@ -103,7 +105,7 @@ class ResumeBot(commands.Bot):
                             total_projects_bullets = 0
 
                             for experience in experiences:
-                                if isinstance(experience, dict):  # Ensure experience is a dictionary
+                                if isinstance(experience, dict):
                                     experience_embed = discord.Embed(title=f"**Experience at {experience.get('company', 'Unknown')} - {experience.get('role', 'Unknown')}**\n", color=0xe5e7eb)
                                     await message.channel.send(embed=experience_embed)
                                     bullets = experience.get('bullets', [])
@@ -111,12 +113,12 @@ class ResumeBot(commands.Bot):
                                         logging.error("Expected 'bullets' to be a list.")
                                         continue
 
-                                    for idx, bullet in enumerate(bullets):  # Use .get() to avoid KeyError
-                                        if isinstance(bullet, dict):  # Ensure bullet is a dictionary
-                                            total_experiences_score += bullet.get('score', 0)  # Use .get() to avoid KeyError
+                                    for idx, bullet in enumerate(bullets):
+                                        if isinstance(bullet, dict):
+                                            total_experiences_score += bullet.get('score', 0)
                                             total_experiences_bullets += 1
                                             rewrites = "\n\n> ".join(bullet.get('rewrites', [])) if bullet.get('rewrites') else None
-                                            bullet_embed = discord.Embed(title=f"{bullet.get('score', 0)}/10", color=get_score_color(bullet.get('score', 0)))
+                                            bullet_embed = discord.Embed(title=f"{bullet.get('score', 0)}/10.0", color=get_score_color(bullet.get('score', 0)))
                                             bullet_embed.add_field(name="", value=f"> *{bullet.get('content', 'No content')}*\n", inline=False)
                                             bullet_embed.add_field(name="Feedback", value=f"> {bullet.get('feedback', 'No feedback')}\n", inline=False)
                                             if rewrites:
@@ -132,7 +134,7 @@ class ResumeBot(commands.Bot):
                                 title="Experience Section Score",
                                 color=get_score_color(avg_expereinces_final_score)
                             )
-                            expereinces_final_embed.add_field(name=f"{round(avg_expereinces_final_score,1)}/10", value="", inline=False)
+                            expereinces_final_embed.add_field(name=f"{round(avg_expereinces_final_score,1)}/10.0", value="", inline=False)
                             await message.channel.send(embed=expereinces_final_embed)
 
                             # Projects Section
@@ -143,7 +145,7 @@ class ResumeBot(commands.Bot):
                                     total_projects_score += bullet['score']
                                     total_projects_bullets += 1
                                     rewrites = "\n\n> ".join(bullet['rewrites']) if bullet['rewrites'] else None
-                                    bullet_embed = discord.Embed(title=f"{bullet['score']}/10", color=get_score_color(bullet['score']))
+                                    bullet_embed = discord.Embed(title=f"{bullet['score']}/10.0", color=get_score_color(bullet['score']))
                                     bullet_embed.add_field(name="", value=f"> *{bullet['content']}*\n", inline=False)
                                     bullet_embed.add_field(name="Feedback", value=f"> {bullet['feedback']}\n", inline=False)
                                     if rewrites:
@@ -155,35 +157,38 @@ class ResumeBot(commands.Bot):
                                 title="Project Section Score",
                                 color=get_score_color(avg_projects_final_score)
                             )
-                            projects_final_embed.add_field(name=f"{round(avg_projects_final_score, 1)}/10", value="", inline=False)
+                            projects_final_embed.add_field(name=f"{round(avg_projects_final_score, 1)}/10.0", value="", inline=False)
                             await message.channel.send(embed=projects_final_embed)
-
-                            logging.info("Formatting: ", feedback)
                             
                             # Formatting Feedback Section
                             formatting = feedback.get("formatting")
+                            logging.info("Formatting: ", formatting)
                             if formatting:
                                 total_formatting_score = formatting['overall_score']
-                                formatting_embed = discord.Embed(title="📄 Resume Formatting Feedback", color=get_score_color(formatting['overall_score']))
-
+                                formatting_embed = discord.Embed(title="📄 Resume Formatting Feedback", color=0xe5e7eb)
+                                await message.channel.send(embed=formatting_embed)
+                                
                                 # Add fields for each formatting aspect
                                 for aspect in ['font_consistency', 'font_choice', 'font_size', 'alignment', 'margins', 
                                             'line_spacing', 'section_spacing', 'headings', 'bullet_points', 
                                             'contact_information', 'overall_layout', 'page_utilization', 'is_single_page', 'consistency']:
                                     if aspect in formatting:
+                                        formatting_embed = discord.Embed(title=f"**{aspect.replace('_', ' ').title()}**", color=get_score_color(formatting['overall_score']))
                                         aspect_data = formatting[aspect]
                                         emoji = "✅" if not aspect_data['issue'] else "❌"
                                         score_emoji = get_score_emoji(aspect_data['score'])
-                                        field_name = f"{emoji} {aspect.replace('_', ' ').title()}: {aspect_data['score']}/10 {score_emoji}"
+                                        field_name = f"{emoji} {aspect.replace('_', ' ').title()}: {aspect_data['score']}/10.0 {score_emoji}"
                                         field_value = f"{aspect_data['feedback']}"
+                                        suggestions = "\n\n> ".join(aspect_data['suggestions']) if 'suggestions' in aspect_data and aspect_data['suggestions'][0] != "" else None
                                         formatting_embed.add_field(name=field_name, value=field_value, inline=False)
-
-                                await message.channel.send(embed=formatting_embed)
+                                        if suggestions:
+                                            formatting_embed.add_field(name="Suggestions ", value=f"> {suggestions}", inline=False)
+                                    await message.channel.send(embed=formatting_embed)
                                 
                                 # Overall score
                                 overall_score = formatting['overall_score']
                                 overall_score_embed = discord.Embed(title="Formatting Score", color=get_score_color(overall_score))
-                                overall_score_embed.add_field(name=f"{round(overall_score,1)}/10", value="", inline=False)
+                                overall_score_embed.add_field(name=f"{round(overall_score,1)}/10.0", value="", inline=False)
                                 await message.channel.send(embed=overall_score_embed)
 
                             final_score = (avg_projects_final_score + avg_expereinces_final_score + total_formatting_score) / 3.0  # Ensure float division
@@ -198,7 +203,7 @@ class ResumeBot(commands.Bot):
                             final_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
                             await loading_message.edit(embed=final_embed)
                             
-                            final_score_embed = discord.Embed(title=f"Final Score: {round(final_score, 1)}/10", color=get_score_color(final_score))
+                            final_score_embed = discord.Embed(title=f"Final Score: {round(final_score, 1)}/10.0", color=get_score_color(final_score))
                             final_score_embed.set_image(url=gif_url)
                             final_score_embed.add_field(name="\u200b", value="• Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪 •", inline=False)
                             final_score_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")

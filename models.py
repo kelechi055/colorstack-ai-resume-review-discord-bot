@@ -19,6 +19,7 @@ class ResumeProject(BaseModel):
 class FormattingAspect(BaseModel):
     issue: bool = Field(..., description="Whether there is an issue with this aspect")
     feedback: str = Field(..., description="Feedback on this aspect")
+    suggestions: list[str] = Field(default=[], max_items=2, description="Suggestions for the resume bullet")
     score: float = Field(..., ge=0, le=10, description="Score for this aspect")
 
 class FormattingFeedback(BaseModel):
