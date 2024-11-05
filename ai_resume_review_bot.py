@@ -179,10 +179,7 @@ class ResumeBot(commands.Bot):
                                         score_emoji = get_score_emoji(aspect_data['score'])
                                         field_name = f"{emoji} {aspect.replace('_', ' ').title()}: {aspect_data['score']}/10.0 {score_emoji}"
                                         field_value = f"{aspect_data['feedback']}"
-                                        suggestions = "\n\n> ".join(aspect_data['suggestions']) if 'suggestions' in aspect_data and aspect_data['suggestions'][0] != "" else None
                                         formatting_embed.add_field(name=field_name, value=field_value, inline=False)
-                                        if suggestions:
-                                            formatting_embed.add_field(name="Suggestions ", value=f"> {suggestions}", inline=False)
                                     await message.channel.send(embed=formatting_embed)
                                 
                                 # Overall score

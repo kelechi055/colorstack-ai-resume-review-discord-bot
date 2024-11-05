@@ -38,16 +38,99 @@ def review_resume(resume_user: bytes, resume_jake: bytes, job_title: str = None,
         else:
             logging.error(f"Formatting info item at index {index} is not a dictionary: {item}")
 
+    # Add information from the PDFs
+    dos_and_donts = """
+    Do:
+    - Make it one page
+    - Create a master resume listing everything
+    - Keep it simple and easy to read
+    - Utilize a Resume Template
+    - Use a different version for each type of role
+    - Create bullet points answering What, How, Why?
+    - Brag about yourself and what you've done
+    - Save and Send as a PDF with your name (ex. "Last Name First Name" Resume 2022)
+
+    Don't:
+    - Lie about experience
+    - Get in the weeds with your bullet points
+    - Add an objective statement
+    - Get too creative with fonts/colors
+    - Include pictures
+    - Downplay your accomplishments
+    - Use long bullet points or too many words
+    - Re-edit too much
+    """
+
+    bullet_point_guidelines = """
+    Bullet points should follow the Question Model: What, How, Why?
+    - What: Explains what you did, what you built, what you contributed
+    - How: Explains how you built it, what skills you developed
+    - Why: Explains why it mattered, what impact you had on the company
+
+    Example #1: Company Internship
+    Developed a website extension (what) using HTML, Node JS, and CSS (how)   resulting in an increase  in website traffic of 20% (why)
+
+    Example #2: Research or On-Campus experience
+    Created a database (what) using Python, React, and C# (how)  in order to help the college make strategic decisions for 10K students(why)   
+
+    Example #3: TA or Tutor experience
+    Assisted 150 students in a CS course(what) in learning C++ (how) resulting in an average class  average of a B+(why)
+
+    Action Verbs to use:
+    Leadership: Modified, Standardized, Converted, Replaced, Redesigned, Strengthened, Customized, Restructured, Refined, Updated, Influenced, Revamped
+    Management: Oversaw, Executed, Produced, Coordinated, Organized, Orchestrated, Controlled, Chaired, Planned, Headed, Programmed, Operated
+    Creation: Engineered, Created, Instituted, Formalized, Formulated, Founded, Spearheaded, Devised, Introduced, Formed, Developed, Launched
+    Human Resources: Recruited, Hired, Cultivated, Shaped, Guided, Aligned, Regulated, Inspired, Directed, Supervised, Mentored
+    Research: Calculated, Surveyed, Investigated, Evaluated, Tracked, Audited, Tested, Analyzed, Mapped, Examined, Assembled, Measured
+    """
+
+    resume_sections = """
+    Order of sections:
+    1. Contact Info
+       - Email address (should be short, professional, and easy to type)
+       - Phone
+       - LinkedIn (should be formatted as Linkedin: Username and hyperlinked)
+       - Github (should be formatted as Github: Username and hyperlinked)
+    2. Education
+       - Grad date (month and year, don't include starting date)
+       - GPA
+       - Major and Minor
+       - Relevant Coursework
+       - Technical Skills
+       - Languages
+       - Tools & Frameworks
+       - Certifications
+    3. Work Experience/ Research
+       - Should include internships, research experience, TA experience, Tutoring experience, and any other paid experience
+       - Bullet points should be formatted using Question model explained in bullet point guidelines
+    4. Projects
+       - Should include class, personal, or open source projects
+       - Bullet points should be general overview of project and include technologies utilized
+       - No more than 3 one line bullet points should be used, preferably use 2
+    5. Leadership Experience
+       - Should include organizations, awards, scholarships, and any other extracurricular activities
+       - If you run out of space, you can create 2 columns
+    """
+
     system_prompt = f"""
     You are an expert resume reviewer for a {job_details["job_title"]} internship or new grad role at {job_details["company"]}. Your review should be highly detailed and focused on the following aspects:
 
-    Ensure the resume aligns with the job's qualifications. 
+    Ensure the resume aligns with the job's qualifications.
     - Minimum Qualifications: {job_details["min_qual"]}
     - Preferred Qualifications: {job_details["pref_qual"]}
 
+    Here are the key guidelines for resume writing:
+
+    {dos_and_donts}
+
+    {bullet_point_guidelines}
+
+    Resume sections should be in this order:
+    {resume_sections}
+
     Here are the extracted text elements of the default resume for comparison:
     {json.dumps(extracted_data_jake_resume, indent=2)}
-    
+
     Here are your guidelines for a great bullet point:
     - It starts with a strong, relevant action verb that pertains to {job_details["job_title"]} or related technical roles.
     - It is specific, technical, and directly related to {job_details["job_title"]} tasks or achievements.
@@ -85,7 +168,6 @@ def review_resume(resume_user: bytes, resume_jake: bytes, job_title: str = None,
     - Explain why each identified issue is problematic for a {job_details["job_title"]} resume.
     - Be precise in describing the location and nature of formatting problems.
     - Acknowledge any formatting aspects that are well-executed.
-
 
     Here are your guidelines for suggesting formatting improvements:
     - If the formatting is a 10/10, do not suggest any improvements.
