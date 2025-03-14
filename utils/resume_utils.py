@@ -7,26 +7,18 @@ from models import ResumeFeedback
 from utils.anthropic_utils import get_chat_completion
 from utils.pdf_utils import analyze_font_consistency, check_single_page, convert_pdf_to_image, extract_text_and_formatting
 
-# Set up logging configuration
-log_directory = "logs"
-if not os.path.exists(log_directory):
-    os.makedirs(log_directory)
-
-log_file_path = os.path.join(log_directory, "resume_review.log")
-
-# Configure the root logger
+# Configure logging for Heroku
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(log_file_path),
-        logging.StreamHandler()  # This will also print logs to console
+        logging.StreamHandler()  # Only use StreamHandler for Heroku
     ]
 )
 
 # Create a logger specific to this module
 logger = logging.getLogger(__name__)
-logger.info("Resume utils module initialized. Logging to: %s", log_file_path)
+logger.info("Resume utils module initialized")
 
 def review_resume(resume_user: bytes, resume_jake: bytes, job_title: str = None, company: str = None, min_qual: str = None, pref_qual: str = None) -> dict:
     logger.info("Starting resume review process")
