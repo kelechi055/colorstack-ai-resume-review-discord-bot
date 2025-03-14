@@ -49,6 +49,7 @@ class ResumeBot(commands.Bot):
     def __init__(self, command_prefix, intents):
         super().__init__(command_prefix=command_prefix, intents=intents)
         self.job_details = None
+        self._already_processing_commands = False
         
         # Configure logging
         logging.basicConfig(
@@ -58,6 +59,17 @@ class ResumeBot(commands.Bot):
                 logging.StreamHandler()
             ]
         )
+    
+    async def process_commands(self, message):
+        # Prevent recursive command processing
+        if self._already_processing_commands:
+            return
+            
+        self._already_processing_commands = True
+        try:
+            await super().process_commands(message)
+        finally:
+            self._already_processing_commands = False
     
     async def on_ready(self):
         logging.info(f'Logged in as {self.user.name} ({self.user.id})')
@@ -176,13 +188,15 @@ class ResumeBot(commands.Bot):
         if message.author == self.user:
             return
             
-        # If this is a command, only process it through process_commands
-        if message.content.startswith(self.command_prefix):
-            await self.process_commands(message)
-            return
+        # Process commands first (our override will prevent double processing)
+        await self.process_commands(message)
         
         # Only handle resume uploads in forum channels
         if str(message.channel.parent_id) == RESUME_REVIEW_CHANNEL_ID:
+            # Skip if this is a command
+            if message.content.startswith(self.command_prefix):
+                return
+                
             logging.info(f"Message received in resume review channel: {message.content}")
 
             if message.attachments:
