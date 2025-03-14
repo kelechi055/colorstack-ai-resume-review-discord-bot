@@ -87,6 +87,55 @@ A Discord bot that provides automated AI-powered resume reviews for ColorStack m
    heroku ps:scale worker=1
    ```
 
+### Free Deployment Alternatives
+
+#### Replit (Free)
+
+1. **Create a Replit account** at [replit.com](https://replit.com)
+2. **Create a new Python repl**
+3. **Upload your code** or connect your GitHub repository
+4. **Add a `.replit` file** with:
+   ```
+   run = "python main.py"
+   ```
+5. **Set up environment variables** in the Secrets tab
+6. **Enable the "Always On" feature** (free for students with the Hacker plan)
+
+#### Railway (Free Tier)
+
+1. **Create a Railway account** at [railway.app](https://railway.app)
+2. **Create a new project** and connect your GitHub repository
+3. **Set up environment variables** in the Variables tab
+4. **Deploy your application**
+5. **Note**: Free tier includes $5 of free credits per month
+
+#### Oracle Cloud Free Tier (Always Free)
+
+1. **Create an Oracle Cloud account** at [oracle.com/cloud/free](https://www.oracle.com/cloud/free/)
+2. **Set up a VM instance** using the Always Free resources
+3. **Clone your repository** and set up the bot as you would on a local machine
+4. **Create a systemd service** to keep the bot running
+5. **Note**: Includes 2 AMD-based Compute VMs with 1 GB RAM each that never expire
+
+#### Google Cloud Free Tier (Always Free)
+
+1. **Create a Google Cloud account** at [cloud.google.com](https://cloud.google.com/)
+2. **Set up a VM instance** using the e2-micro instance type (always free)
+3. **Clone your repository** and set up the bot as you would on a local machine
+4. **Create a systemd service** to keep the bot running
+5. **Note**: Includes 1 e2-micro VM instance in US regions that never expires
+
+### Deployment Options Comparison
+
+| Platform | Cost | Pros | Cons | Best For |
+|----------|------|------|------|----------|
+| **Heroku** | $7/month (Basic)<br>$5/month (Eco) | Easy deployment<br>Managed platform<br>Good logging | Sleep restrictions on Eco<br>Limited resources | Quick setup, testing |
+| **Replit** | Free (with limitations) | Zero setup<br>Web-based IDE<br>Always On option | Limited resources<br>Occasional restarts | Students, beginners |
+| **Railway** | Free tier ($5 credit/month) | Simple deployment<br>GitHub integration | Credit expires monthly<br>Requires card for verification | Small projects, testing |
+| **Oracle Cloud** | Free forever | 2 VMs always free<br>Never expires<br>Full control | Complex setup<br>Requires sysadmin knowledge | Long-term production |
+| **Google Cloud** | Free forever | VM always free<br>Never expires<br>Full control | Complex setup<br>Requires sysadmin knowledge | Long-term production |
+| **Raspberry Pi** | One-time hardware cost | Complete control<br>No ongoing costs<br>No sleep restrictions | Hardware maintenance<br>Power/internet dependency | Self-hosting enthusiasts |
+
 ### Raspberry Pi Deployment
 
 1. **Clone the repository on your Raspberry Pi**
