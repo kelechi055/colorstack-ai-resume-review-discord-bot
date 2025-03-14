@@ -1,0 +1,20 @@
+run = "python main.py"
+language = "python3"
+entrypoint = "main.py"
+hidden = [".env", "venv", ".config", "**/__pycache__", "**/.mypy_cache", "**/*.pyc"]
+
+[nix]
+channel = "stable-22_11"
+
+[env]
+PYTHONPATH = "$PYTHONPATH:${REPL_HOME}"
+
+[packager]
+ignoredPackages = ["discord.py"]
+
+[packager.features]
+packageSearch = true
+guessImports = true
+
+[unitTest]
+language = "python3" 

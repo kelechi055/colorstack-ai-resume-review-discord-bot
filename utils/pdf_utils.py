@@ -3,15 +3,45 @@ import fitz
 from io import BytesIO
 import base64
 import logging
+import sys
+import os
 
 # Convert PDF to Image (Base64)
 def convert_pdf_to_image(file: bytes) -> str:
-    images = convert_from_bytes(file, first_page=1, last_page=1)
-    buffered = BytesIO()
-    images[0].save(buffered, format="PNG")
-    img_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
-    logging.info("Converted PDF to Base64 image successfully")
-    return img_base64
+    try:
+        # Check if we're on Heroku or similar platform
+        if 'DYNO' in os.environ:
+            # Heroku has Poppler installed via Aptfile
+            images = convert_from_bytes(file, first_page=1, last_page=1)
+        else:
+            # Try to use default path
+            try:
+                images = convert_from_bytes(file, first_page=1, last_page=1)
+            except Exception as e:
+                logging.warning(f"Default Poppler path failed: {e}")
+                # Try platform-specific paths
+                if sys.platform == 'win32':
+                    # Windows - try common installation path
+                    poppler_path = os.path.join(os.getcwd(), 'poppler', 'bin')
+                    if not os.path.exists(poppler_path):
+                        poppler_path = r"C:\Program Files\poppler\bin"
+                    images = convert_from_bytes(file, first_page=1, last_page=1, poppler_path=poppler_path)
+                elif sys.platform == 'darwin':
+                    # macOS - try Homebrew path
+                    images = convert_from_bytes(file, first_page=1, last_page=1, poppler_path="/usr/local/bin")
+                else:
+                    # Linux - try common paths
+                    images = convert_from_bytes(file, first_page=1, last_page=1)
+        
+        buffered = BytesIO()
+        images[0].save(buffered, format="PNG")
+        img_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
+        logging.info("Converted PDF to Base64 image successfully")
+        return img_base64
+    except Exception as e:
+        logging.error(f"Error converting PDF to image: {e}")
+        # Return a placeholder image or raise the exception
+        raise
 
 def extract_text_and_formatting(file: bytes) -> dict:
     with fitz.open(stream=file, filetype="pdf") as doc:

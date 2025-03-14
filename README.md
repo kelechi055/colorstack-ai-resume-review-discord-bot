@@ -19,6 +19,11 @@ A Discord bot that provides automated AI-powered resume reviews for ColorStack m
 - Discord Bot Token
 - Anthropic API Key (for Claude AI)
 - PDF processing capabilities
+- Poppler (required for PDF processing):
+  - **Ubuntu/Debian/Raspberry Pi**: `sudo apt-get install poppler-utils`
+  - **macOS**: `brew install poppler`
+  - **Windows**: Download from [poppler-windows](https://github.com/oschwartz10612/poppler-windows/releases/)
+  - **Heroku**: Automatically installed via the included Aptfile
 
 ## 🚀 Installation
 
