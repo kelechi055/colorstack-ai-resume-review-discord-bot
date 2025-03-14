@@ -23,6 +23,12 @@ class ResumeBot(commands.Bot):
         logging.info(f'Logged in as {self.user.name}')
         logging.info('Bot is ready to process messages and threads')
     
+    async def setup_hook(self):
+        """This is called when the bot starts, before it connects to Discord"""
+        # Start the heartbeat task
+        self.bg_task = self.loop.create_task(self.heartbeat_task())
+        logging.info("Heartbeat task registered in setup_hook")
+    
     async def heartbeat_task(self):
         """Background task that keeps the bot active by logging a heartbeat message periodically."""
         await self.wait_until_ready()
@@ -225,7 +231,5 @@ def start_bot(token):
     intents.members = True
     bot = ResumeBot(command_prefix="!", intents=intents)
     
-    # Start the heartbeat task to keep the bot active
-    bot.loop.create_task(bot.heartbeat_task())
     
     bot.run(token)
