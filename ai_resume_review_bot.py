@@ -172,20 +172,17 @@ class ResumeBot(commands.Bot):
         logging.info("Heartbeat: Bot is still running")
     
     async def on_message(self, message):
-        # Process commands first
-        await self.process_commands(message)
-        
         # Don't respond to our own messages
         if message.author == self.user:
             return
+            
+        # If this is a command, only process it through process_commands
+        if message.content.startswith(self.command_prefix):
+            await self.process_commands(message)
+            return
         
-        # Don't process commands here - they're already handled by process_commands above
         # Only handle resume uploads in forum channels
         if str(message.channel.parent_id) == RESUME_REVIEW_CHANNEL_ID:
-            # Check if this is a command (starts with prefix)
-            if message.content.startswith(self.command_prefix):
-                return  # Skip processing as it's already handled by process_commands
-                
             logging.info(f"Message received in resume review channel: {message.content}")
 
             if message.attachments:
