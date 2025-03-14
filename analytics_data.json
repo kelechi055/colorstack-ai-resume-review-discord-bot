@@ -1,14 +1,14 @@
 {
   "resume_reviews": {
-    "total": 2,
+    "total": 10,
     "by_server": {
-      "987654321": 2
+      "987654321": 10
     },
     "by_user": {
-      "123456789": 2
+      "123456789": 10
     },
     "by_date": {
-      "2025-03-14": 2
+      "2025-03-14": 10
     },
     "average_scores": {
       "overall": 7.5,
@@ -23,13 +23,13 @@
     "estimated_cost": 0.018
   },
   "feedback_ratings": {
-    "total": 2,
+    "total": 10,
     "average": 4.0,
     "ratings": {
       "1": 0,
       "2": 0,
       "3": 0,
-      "4": 2,
+      "4": 10,
       "5": 0
     }
   }
