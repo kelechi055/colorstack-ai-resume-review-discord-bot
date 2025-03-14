@@ -12,6 +12,9 @@ A Discord bot that provides automated AI-powered resume reviews for ColorStack m
 - **Job-Specific Feedback**: Tailors feedback based on specific job postings (optional)
 - **Scoring System**: Provides numerical scores for each section and an overall resume score
 - **Visual Feedback**: Uses embeds and GIFs to present feedback in an engaging way
+- **Analytics & Monitoring**: Tracks usage statistics, API consumption, and user feedback
+- **User Feedback System**: Collects user ratings to improve the service
+- **Help Command**: Provides guidance on how to use the bot
 
 ## 📋 Requirements
 
@@ -65,6 +68,11 @@ A Discord bot that provides automated AI-powered resume reviews for ColorStack m
    - Upload a PDF resume to the designated resume review channel
    - The bot will ask if you want to provide job details
    - Receive detailed feedback on your resume
+   - Rate your experience with the feedback (1-5 stars)
+
+3. **Bot Commands**
+   - `!help` - Shows information about how to use the bot
+   - `!stats` - Shows usage statistics (admin only)
 
 ## 🤖 Adding the Bot to Your Discord Server
 
@@ -286,6 +294,11 @@ The bot uses Python's logging module to record information about its operation:
    - Ensure all environment variables are properly set
    - Verify the Procfile is correctly configured with `worker: python main.py`
 
+4. **Analytics not working**
+   - Check that the `analytics_data.json` file is writable by the application
+   - Verify that the analytics module is properly imported
+   - Check logs for any errors related to analytics tracking
+
 ## 📊 Architecture
 
 The bot consists of several key components:
@@ -314,3 +327,25 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪
 - Powered by ColorStack UF ResumeAI
 - Uses [Jake's Resume](https://www.overleaf.com/latex/templates/jakes-resume/syzfjbzwjncs) as a reference template
+
+## 📊 Analytics & Monitoring
+
+The bot includes a comprehensive analytics system that tracks:
+
+- **Resume Reviews**: Total number of reviews, breakdown by server and user
+- **Scores**: Average scores for experiences, projects, formatting, and overall
+- **API Usage**: Token consumption and estimated costs
+- **User Feedback**: Ratings provided by users after receiving resume feedback
+
+Administrators can view these statistics using the `!stats` command in Discord.
+
+### Analytics Data Storage
+
+Analytics data is stored in a JSON file (`analytics_data.json`) and includes:
+
+- Daily usage metrics
+- Server-specific statistics
+- User engagement metrics
+- API consumption tracking
+
+This data helps administrators understand usage patterns and make informed decisions about bot improvements.
