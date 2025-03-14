@@ -200,8 +200,16 @@ class ResumeBot(commands.Bot):
             logging.info("Channel has no parent_id attribute")
         logging.info(f"Expected forum channel ID: {RESUME_REVIEW_CHANNEL_ID}")
         
-        # Only handle resume uploads in forum channels
-        if str(message.channel.parent_id) == RESUME_REVIEW_CHANNEL_ID:
+        # Check if this is either:
+        # 1. A thread in the forum channel (parent_id matches)
+        # 2. The forum channel itself (channel.id matches)
+        # 3. Any channel with the right ID (for backward compatibility)
+        is_valid_channel = (
+            (hasattr(message.channel, 'parent_id') and str(message.channel.parent_id) == RESUME_REVIEW_CHANNEL_ID) or
+            str(message.channel.id) == RESUME_REVIEW_CHANNEL_ID
+        )
+        
+        if is_valid_channel:
             # Skip if this is a command
             if message.content.startswith(self.command_prefix):
                 return
