@@ -191,6 +191,15 @@ class ResumeBot(commands.Bot):
         # Process commands first (our override will prevent double processing)
         await self.process_commands(message)
         
+        # Debug logging for channel IDs
+        logging.info(f"Message channel type: {type(message.channel).__name__}")
+        logging.info(f"Message channel ID: {message.channel.id}")
+        if hasattr(message.channel, 'parent_id'):
+            logging.info(f"Parent channel ID: {message.channel.parent_id}")
+        else:
+            logging.info("Channel has no parent_id attribute")
+        logging.info(f"Expected forum channel ID: {RESUME_REVIEW_CHANNEL_ID}")
+        
         # Only handle resume uploads in forum channels
         if str(message.channel.parent_id) == RESUME_REVIEW_CHANNEL_ID:
             # Skip if this is a command
