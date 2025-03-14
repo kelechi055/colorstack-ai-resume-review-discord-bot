@@ -179,8 +179,13 @@ class ResumeBot(commands.Bot):
         if message.author == self.user:
             return
         
-        # Check if the message is in the resume review channel
+        # Don't process commands here - they're already handled by process_commands above
+        # Only handle resume uploads in forum channels
         if str(message.channel.parent_id) == RESUME_REVIEW_CHANNEL_ID:
+            # Check if this is a command (starts with prefix)
+            if message.content.startswith(self.command_prefix):
+                return  # Skip processing as it's already handled by process_commands
+                
             logging.info(f"Message received in resume review channel: {message.content}")
 
             if message.attachments:
