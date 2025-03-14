@@ -112,14 +112,14 @@ class ResumeBot(commands.Bot):
             embed.add_field(
                 name="📊 Commands",
                 value="• `!resumehelp` - Shows this help message\n"
-                      "• `!stats` - Shows usage statistics (admin only)",
+                      "• `!resumestats` - Shows usage statistics (admin only)",
                 inline=False
             )
             
             embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
             await ctx.send(embed=embed)
             
-        @self.command(name="stats", description="Shows usage statistics (admin only)")
+        @self.command(name="resumestats", description="Shows usage statistics (admin only)")
         @commands.has_permissions(administrator=True)
         async def stats_command(ctx):
             # Get usage report from analytics
