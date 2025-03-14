@@ -1,12 +1,37 @@
 import json
 import logging
+import os
 import tiktoken
 from pydantic import ValidationError
 from models import ResumeFeedback
 from utils.anthropic_utils import get_chat_completion
 from utils.pdf_utils import analyze_font_consistency, check_single_page, convert_pdf_to_image, extract_text_and_formatting
 
+# Set up logging configuration
+log_directory = "logs"
+if not os.path.exists(log_directory):
+    os.makedirs(log_directory)
+
+log_file_path = os.path.join(log_directory, "resume_review.log")
+
+# Configure the root logger
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(log_file_path),
+        logging.StreamHandler()  # This will also print logs to console
+    ]
+)
+
+# Create a logger specific to this module
+logger = logging.getLogger(__name__)
+logger.info("Resume utils module initialized. Logging to: %s", log_file_path)
+
 def review_resume(resume_user: bytes, resume_jake: bytes, job_title: str = None, company: str = None, min_qual: str = None, pref_qual: str = None) -> dict:
+    logger.info("Starting resume review process")
+    logger.info(f"Job title: {job_title}, Company: {company}")
+    
     job_details = {
         "job_title": "Software Engineer" if job_title is None else job_title,
         "company": "Google" if company is None else company,
@@ -16,10 +41,10 @@ def review_resume(resume_user: bytes, resume_jake: bytes, job_title: str = None,
 
     extracted_data_jake_resume = extract_text_and_formatting(resume_jake)
 
-    logging.debug(f"Extracted data: {extracted_data_jake_resume}")
+    logger.debug(f"Extracted data: {extracted_data_jake_resume}")
 
     if not isinstance(extracted_data_jake_resume, dict):
-        logging.error("Extracted Jake resume data is not a dictionary.")
+        logger.error("Extracted Jake resume data is not a dictionary.")
         raise ValueError("Extracted Jake resume data must be a dictionary.")
 
     formatting_info_jake_resume = extracted_data_jake_resume["formatting"]
@@ -34,9 +59,9 @@ def review_resume(resume_user: bytes, resume_jake: bytes, job_title: str = None,
             bbox = item.get("bbox")
             
             # Log the extracted formatting information
-            logging.info(f"Formatting info [{index}]: text='{text}', font='{font}', size={size}, bbox={bbox}")
+            logger.info(f"Formatting info [{index}]: text='{text}', font='{font}', size={size}, bbox={bbox}")
         else:
-            logging.error(f"Formatting info item at index {index} is not a dictionary: {item}")
+            logger.error(f"Formatting info item at index {index} is not a dictionary: {item}")
 
     # Add information from the PDFs
     dos_and_donts = """
@@ -184,11 +209,11 @@ def review_resume(resume_user: bytes, resume_jake: bytes, job_title: str = None,
     # Extract text and formatting information
     extracted_data_user_resume = extract_text_and_formatting(resume_user)
 
-    logging.debug(f"Extracted data: {extracted_data_user_resume}")
+    logger.debug(f"Extracted data: {extracted_data_user_resume}")
 
     # Ensure extracted_data is a dictionary
     if not isinstance(extracted_data_user_resume, dict):
-        logging.error("Extracted user resume data is not a dictionary.")
+        logger.error("Extracted user resume data is not a dictionary.")
         raise ValueError("Extracted user resume data must be a dictionary.")
 
     formatting_info_user_resume = extracted_data_user_resume["formatting"]
@@ -203,22 +228,22 @@ def review_resume(resume_user: bytes, resume_jake: bytes, job_title: str = None,
             bbox = item.get("bbox")
             
             # Log the extracted formatting information
-            logging.info(f"Formatting info [{index}]: text='{text}', font='{font}', size={size}, bbox={bbox}")
+            logger.info(f"Formatting info [{index}]: text='{text}', font='{font}', size={size}, bbox={bbox}")
         else:
-            logging.error(f"Formatting info item at index {index} is not a dictionary: {item}")
+            logger.error(f"Formatting info item at index {index} is not a dictionary: {item}")
 
     # Analyze font consistency
     font_consistency_feedback = analyze_font_consistency(formatting_info_user_resume)
 
     # Adjust feedback based on page count
     if not is_single_page_user_resume:
-        logging.warning("The resume is more than one page.")
+        logger.warning("The resume is more than one page.")
         additional_feedback = "Your resume exceeds one page. Consider condensing your content to fit on a single page for better readability."
     else:
         additional_feedback = "Your resume is appropriately formatted to fit on a single page."
 
 
-    logging.info("FONT CONSISTENCY: ", font_consistency_feedback['feedback'])
+    logger.info("FONT CONSISTENCY: ", font_consistency_feedback['feedback'])
 
     user_prompt = f"""
     Please review this resume for the role of {job_title} at {company}. 
@@ -296,22 +321,22 @@ def review_resume(resume_user: bytes, resume_jake: bytes, job_title: str = None,
 
     encoding = tiktoken.encoding_for_model("gpt-4o")
     num_tokens = len(encoding.encode(user_prompt)) + len(encoding.encode(system_prompt))
-    logging.info(f"Number of tokens in user and system prompt: {num_tokens}")
+    logger.info(f"Number of tokens in user and system prompt: {num_tokens}")
     
     try:
         completion = get_chat_completion(max_tokens=8192, messages=messages, system=system_prompt, temperature=0.25)
         result = json.loads(completion)
-        logging.info(f"Result structure: {result}")
-        logging.info(result['content'][0])
-        logging.info(result['content'][0]['text'])
+        logger.info(f"Result structure: {result}")
+        logger.info(result['content'][0])
+        logger.info(result['content'][0]['text'])
         resume_feedback = ResumeFeedback(**json.loads(result['content'][0]['text']))
-        logging.info("Resume reviewed and feedback generated successfully")
+        logger.info("Resume reviewed and feedback generated successfully")
         resume_feedback_model = resume_feedback.dict()
-        logging.info(resume_feedback_model)
+        logger.info(resume_feedback_model)
         return resume_feedback.dict()
     except ValidationError as e:
-        logging.error(f"Validation error: {str(e)}")
+        logger.error(f"Validation error: {str(e)}")
         raise
     except Exception as e:
-        logging.error(f"Error processing resume: {str(e)}")
+        logger.error(f"Error processing resume: {str(e)}")
         raise
