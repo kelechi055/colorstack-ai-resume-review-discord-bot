@@ -6,7 +6,7 @@ from discord.ext import commands, tasks
 import os
 from utils.job_input_view import JobInputView
 from utils.feedback_view import FeedbackView
-from utils.pdf_utils import review_resume
+from utils.resume_utils import review_resume
 from utils.analytics import analytics
 from config import RESUME_REVIEW_CHANNEL_ID
 
@@ -70,7 +70,7 @@ class ResumeBot(commands.Bot):
         self.add_commands()
         
     def add_commands(self):
-        @self.command(name="help", description="Shows help information about the bot")
+        @self.command(name="resumehelp", description="Shows help information about the resume review bot")
         async def help_command(ctx):
             embed = discord.Embed(
                 title="Resume Review Bot Help",
@@ -99,7 +99,7 @@ class ResumeBot(commands.Bot):
             
             embed.add_field(
                 name="📊 Commands",
-                value="• `!help` - Shows this help message\n"
+                value="• `!resumehelp` - Shows this help message\n"
                       "• `!stats` - Shows usage statistics (admin only)",
                 inline=False
             )

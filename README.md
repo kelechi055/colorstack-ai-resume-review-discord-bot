@@ -71,7 +71,7 @@ A Discord bot that provides automated AI-powered resume reviews for ColorStack m
    - Rate your experience with the feedback (1-5 stars)
 
 3. **Bot Commands**
-   - `!help` - Shows information about how to use the bot
+   - `!resumehelp` - Shows information about how to use the bot and available features
    - `!stats` - Shows usage statistics (admin only)
 
 ## 🤖 Adding the Bot to Your Discord Server
@@ -298,6 +298,12 @@ The bot uses Python's logging module to record information about its operation:
    - Check that the `analytics_data.json` file is writable by the application
    - Verify that the analytics module is properly imported
    - Check logs for any errors related to analytics tracking
+   - Ensure the bot has permission to write files in the deployment environment
+
+5. **Feedback mechanism not working**
+   - Verify that the Discord bot has the necessary permissions to create buttons
+   - Check that the bot has the "Use External Emojis" permission
+   - Ensure the bot has the "Message Content Intent" enabled in the Discord Developer Portal
 
 ## 📊 Architecture
 
@@ -318,6 +324,30 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## 🚀 Future Enhancements
+
+Here are some potential future enhancements for the bot:
+
+### Analytics Improvements
+- **Visualization Dashboard**: Create a web dashboard for analytics visualization
+- **Export Functionality**: Allow exporting analytics data to CSV/Excel
+- **User-Specific Tracking**: Enable users to track their resume improvement over time
+- **Trend Analysis**: Implement trend analysis to identify patterns in resume quality
+
+### User Experience Enhancements
+- **Resume Templates**: Provide example templates for different industries
+- **Scheduled Reviews**: Allow users to schedule follow-up reviews
+- **Comparative Analysis**: Compare resume scores against industry averages
+- **Personalized Tips**: Provide personalized improvement tips based on user history
+
+### Technical Improvements
+- **Database Integration**: Move from file-based to database storage for analytics
+- **API Rate Limiting**: Implement more sophisticated API usage controls
+- **Caching**: Add caching for common operations to improve performance
+- **Automated Testing**: Expand test coverage for all components
+
+If you're interested in contributing to any of these enhancements, please check the Issues tab for current development priorities or open a new issue to discuss your ideas.
+
 ## 📜 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
@@ -337,15 +367,75 @@ The bot includes a comprehensive analytics system that tracks:
 - **API Usage**: Token consumption and estimated costs
 - **User Feedback**: Ratings provided by users after receiving resume feedback
 
-Administrators can view these statistics using the `!stats` command in Discord.
+### Usage Statistics Command
+
+Administrators can view these statistics using the `!stats` command in Discord, which displays:
+
+- Total number of resume reviews processed
+- Average scores across all resume sections
+- API usage metrics and estimated costs
+- User feedback ratings and satisfaction metrics
 
 ### Analytics Data Storage
 
 Analytics data is stored in a JSON file (`analytics_data.json`) and includes:
 
-- Daily usage metrics
-- Server-specific statistics
-- User engagement metrics
-- API consumption tracking
+- Daily usage metrics for tracking trends over time
+- Server-specific statistics to understand usage across different communities
+- User engagement metrics to identify power users
+- API consumption tracking to monitor costs
+- Feedback ratings to measure user satisfaction
 
 This data helps administrators understand usage patterns and make informed decisions about bot improvements.
+
+### Implementation Details
+
+The analytics system is implemented in the `utils/analytics.py` file and provides:
+
+- Persistent storage with error handling
+- Atomic updates to prevent data corruption
+- Weighted average calculations for accurate scoring metrics
+- Cost estimation based on Claude API pricing
+
+### Testing Analytics
+
+The repository includes a test script (`test_analytics.py`) to verify the analytics functionality:
+
+```bash
+python test_analytics.py
+```
+
+This script:
+- Creates test resume review entries
+- Simulates API usage tracking
+- Records sample feedback ratings
+- Generates a usage report
+- Verifies that the analytics file is created correctly
+
+Running this test is recommended after deployment to ensure the analytics system is functioning properly in your environment.
+
+## 🤖 User Experience Features
+
+### Help Command
+
+The bot provides a helpful `!resumehelp` command that explains:
+
+- How to get a resume review
+- What's included in the review
+- Available commands and their usage
+
+### Feedback Collection
+
+After each resume review, the bot asks users to rate their experience:
+
+- Simple 1-5 star rating system
+- Feedback is stored in the analytics system
+- Helps identify areas for improvement
+
+### Error Handling
+
+The bot includes robust error handling to ensure a smooth user experience:
+
+- Graceful handling of malformed PDFs
+- Clear error messages for users
+- Detailed logging for administrators
