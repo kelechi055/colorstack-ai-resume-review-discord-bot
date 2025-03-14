@@ -72,7 +72,7 @@ A Discord bot that provides automated AI-powered resume reviews for ColorStack m
 
 3. **Bot Commands**
    - `!resumehelp` - Shows information about how to use the bot and available features
-   - `!stats` - Shows usage statistics (admin only)
+   - `!resumestats` - Shows usage statistics (admin only)
 
 ## 🤖 Adding the Bot to Your Discord Server
 
@@ -369,7 +369,7 @@ The bot includes a comprehensive analytics system that tracks:
 
 ### Usage Statistics Command
 
-Administrators can view these statistics using the `!stats` command in Discord, which displays:
+Administrators can view these statistics using the `!resumestats` command in Discord, which displays:
 
 - Total number of resume reviews processed
 - Average scores across all resume sections

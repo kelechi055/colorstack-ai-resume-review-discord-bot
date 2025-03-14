@@ -194,7 +194,7 @@ After deploying the bot, perform these steps to ensure everything is working cor
 
 1. **Test the bot commands**:
    - Send `!resumehelp` in a channel where the bot has access
-   - If you're an admin, try `!stats` to see usage statistics
+   - If you're an admin, try `!resumestats` to see usage statistics
 
 2. **Test the resume review process**:
    - Upload a PDF resume to your forum channel
