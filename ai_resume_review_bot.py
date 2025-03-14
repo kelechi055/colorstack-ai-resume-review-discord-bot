@@ -321,7 +321,9 @@ class ResumeBot(commands.Bot):
 
                             for project in projects:
                                 if isinstance(project, dict):
-                                    project_embed = discord.Embed(title=f"**Project: {project.get('name', 'Unknown')}**\n", color=0xe5e7eb)
+                                    # Check if the project has a 'title' field, otherwise try 'name'
+                                    project_title = project.get('title', project.get('name', 'Unknown'))
+                                    project_embed = discord.Embed(title=f"**Project: {project_title}**\n", color=0xe5e7eb)
                                     await message.channel.send(embed=project_embed)
                                     bullets = project.get('bullets', [])
                                     if not isinstance(bullets, list):
