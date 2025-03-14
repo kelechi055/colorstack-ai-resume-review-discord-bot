@@ -422,6 +422,10 @@ class ResumeBot(commands.Bot):
                             
                         except Exception as e:
                             logging.error(f"Failed to process PDF attachment: {e}")
+                            await message.channel.send(f"Sorry, I encountered an error while processing your resume. Error details: {str(e)}")
+                            # Log the full traceback for debugging
+                            import traceback
+                            logging.error(f"Full error traceback: {traceback.format_exc()}")
         else:
             logging.info(f"Message is not in the specified forum channel")
             
