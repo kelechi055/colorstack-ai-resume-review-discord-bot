@@ -61,6 +61,82 @@ A Discord bot that provides automated AI-powered resume reviews for ColorStack m
    - The bot will ask if you want to provide job details
    - Receive detailed feedback on your resume
 
+## 🤖 Adding the Bot to Your Discord Server
+
+To add this bot to your own Discord server, you'll need to create a Discord application, set up a bot user, and invite it to your server.
+
+### 1. Create a Discord Application
+
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
+2. Click "New Application" and give it a name (e.g., "Resume Review Bot")
+3. Navigate to the "Bot" tab and click "Add Bot"
+4. Under the bot settings:
+   - Enable "Message Content Intent" under Privileged Gateway Intents
+   - Enable "Server Members Intent" under Privileged Gateway Intents
+
+### 2. Get Your Bot Token
+
+1. In the Bot tab, click "Reset Token" and copy your bot token
+2. Keep this token secure and never share it publicly
+
+### 3. Invite the Bot to Your Server
+
+1. Go to the "OAuth2" tab, then "URL Generator"
+2. Select the following scopes:
+   - `bot`
+   - `applications.commands`
+3. Select the following bot permissions:
+   - Read Messages/View Channels
+   - Send Messages
+   - Embed Links
+   - Attach Files
+   - Read Message History
+   - Use External Emojis
+   - Add Reactions
+4. Copy the generated URL and open it in your browser
+5. Select your server and authorize the bot
+
+### 4. Set Up Your Environment
+
+1. Follow the installation steps in this README
+2. Create a `.env` file with your bot token:
+   ```
+   DISCORD_TOKEN=your_bot_token_here
+   ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   RESUME_REVIEW_CHANNEL_ID=your_channel_id_here
+   ```
+3. To get your channel ID:
+   - Enable Developer Mode in Discord (User Settings > Advanced > Developer Mode)
+   - Right-click on your resume review channel and select "Copy ID"
+
+### 5. Deploy the Bot
+
+Choose one of the deployment options described in this README and start the bot.
+
+### 6. Set Up a Resume Review Forum Channel
+
+This bot is designed to work with Discord forum channels for organizing resume reviews:
+
+1. **Create a Forum Channel**:
+   - Go to your Discord server
+   - Click the "+" icon next to "TEXT CHANNELS"
+   - Select "Create Forum"
+   - Name it (e.g., "Resume Reviews")
+
+2. **Configure Forum Settings**:
+   - Set appropriate permissions (consider making it private to specific roles)
+   - Enable "Require topic tags" and create tags like "Software Engineering", "Data Science", etc.
+   - Set guidelines explaining how to use the resume review service
+
+3. **Update Your Environment Variables**:
+   - Copy the forum channel ID as described above
+   - Update your `RESUME_REVIEW_CHANNEL_ID` environment variable with this ID
+
+4. **Using the Forum**:
+   - Users should create a new post in the forum
+   - They should upload their resume as a PDF in the first message
+   - The bot will automatically respond with review options and feedback
+
 ## 🌐 Deployment Options
 
 ### Heroku Deployment
