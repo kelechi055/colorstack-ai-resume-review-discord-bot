@@ -200,237 +200,241 @@ class ResumeBot(commands.Bot):
             logging.info("Channel has no parent_id attribute")
         logging.info(f"Expected forum channel ID: {RESUME_REVIEW_CHANNEL_ID}")
         
-        # TEMPORARY: Accept any channel for resume uploads
-        is_valid_channel = True
-        
-        if is_valid_channel:
-            # Skip if this is a command
-            if message.content.startswith(self.command_prefix):
-                return
-                
-            logging.info(f"Message received in resume review channel: {message.content}")
-
-            if message.attachments:
-                for attachment in message.attachments:
-                    if attachment.filename.lower().endswith('.pdf'):
-                        logging.info(f"Processing attachment: {attachment.filename}")
-                        
-                        # Sending the initial feedback embed
-                        main_embed = discord.Embed(
-                            title="Do you have job posting to review for?",
-                            color=0x0699ab
-                        )
-                        view = JobInputView(self, message)
-                        message_with_view = await message.channel.send(embed=main_embed, view=view)
-                        
-                        await view.wait()
-                        
-                        if view.job_details:
-                            self.job_details = view.job_details
-                        else:
-                            await message.channel.send("No job details provided. Providing general resume formatting feedback.")
-                            self.job_details = None
-                        
-                        await message_with_view.delete()
-                        
-                        gif_url = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif"  # Example GIF URL
-                        loading_embed = discord.Embed(
-                            title="This could take a minute or two -- our reviewer is hard at work! 😜",
-                            color=0x0699ab
-                        )
-                        loading_embed.set_image(url=gif_url)
-                        loading_embed.add_field(name="\u200b", value="• Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪 •", inline=False)
-                        loading_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
-                        loading_message = await message.channel.send(embed=loading_embed)
-
-                        main_embed = discord.Embed(
-                            title="AI Resume Feedback",
-                            description="Currently, the resume review tool will only give feedback on your bullet points for experiences and projects, as well as, resume formatting. This does not serve as a complete resume review, so you should still seek feedback from peers. Additionally, this tool relies on AI and may not always provide the best feedback, so take it with a grain of salt.\n\n**Disclaimer:** Any suggestions provided are purely examples and should not be added as-is without verification of accuracy.\n\n**Note:** We are comparing your resume to Jake's resume for formatting feedback. You can view Jake's resume [here](https://www.overleaf.com/latex/templates/jakes-resume/syzfjbzwjncs).",
-                            color=0x0699ab
-                        )
-                        await message.channel.send(embed=main_embed)
-                        user_resume_bytes = await attachment.read()
-                        jake_resume_bytes = open("resumes/jakes-resume.pdf", "rb").read()
-
-                        try:
-                            if self.job_details:
-                                feedback = review_resume(resume_user=user_resume_bytes, resume_jake=jake_resume_bytes, job_title=self.job_details["job_title"], company=self.job_details["company"], min_qual=self.job_details["min_qual"], pref_qual=self.job_details["pref_qual"])
-                            else:
-                                feedback = review_resume(resume_user=user_resume_bytes, resume_jake=jake_resume_bytes)
-
-                            # Log the feedback structure
-                            logging.info(f"Feedback structure: {feedback}")
-
-                            # Check if feedback is a dictionary
-                            if not isinstance(feedback, dict):
-                                logging.error("Feedback is not a dictionary.")
-                                return
-
-                            # Access experiences safely
-                            experiences = feedback.get("experiences", [])
-                            if not isinstance(experiences, list):
-                                logging.error("Expected 'experiences' to be a list.")
-                                return
-
-                            logging.info(f"Experiences: {experiences}")  # Log the experiences
-
-                            total_experiences_score = 0
-                            total_projects_score = 0
-                            total_formatting_score = 0
-                            total_experiences_bullets = 0
-                            total_projects_bullets = 0
-
-                            for experience in experiences:
-                                if isinstance(experience, dict):
-                                    experience_embed = discord.Embed(title=f"**Experience at {experience.get('company', 'Unknown')} - {experience.get('role', 'Unknown')}**\n", color=0xe5e7eb)
-                                    await message.channel.send(embed=experience_embed)
-                                    bullets = experience.get('bullets', [])
-                                    if not isinstance(bullets, list):
-                                        logging.error("Expected 'bullets' to be a list.")
-                                        continue
-
-                                    for idx, bullet in enumerate(bullets):
-                                        if isinstance(bullet, dict):
-                                            total_experiences_score += bullet.get('score', 0)
-                                            total_experiences_bullets += 1
-                                            rewrites = "\n\n> ".join(bullet.get('rewrites', [])) if bullet.get('rewrites') else None
-                                            bullet_embed = discord.Embed(title=f"{bullet.get('score', 0)}/10.0", color=get_score_color(bullet.get('score', 0)))
-                                            bullet_embed.add_field(name="", value=f"> *{bullet.get('content', 'No content')}*\n", inline=False)
-                                            bullet_embed.add_field(name="Feedback", value=f"> {bullet.get('feedback', 'No feedback')}\n", inline=False)
-                                            if rewrites:
-                                                bullet_embed.add_field(name="Suggestions ", value=f"> {rewrites}", inline=False)
-                                            await message.channel.send(embed=bullet_embed)
-                                        else:
-                                            logging.error("Bullet item is not a dictionary.")
-                                else:
-                                    logging.error("Experience item is not a dictionary.")
-
-                            avg_expereinces_final_score = 0 if total_experiences_bullets == 0 else total_experiences_score / total_experiences_bullets
-                            expereinces_final_embed = discord.Embed(
-                                title="Experience Section Score",
-                                color=get_score_color(avg_expereinces_final_score)
-                            )
-                            expereinces_final_embed.add_field(name=f"{round(avg_expereinces_final_score, 1)}/10.0", value="", inline=False)
-                            await message.channel.send(embed=expereinces_final_embed)
-
-                            # Access projects safely
-                            projects = feedback.get("projects", [])
-                            if not isinstance(projects, list):
-                                logging.error("Expected 'projects' to be a list.")
-                                return
-
-                            for project in projects:
-                                if isinstance(project, dict):
-                                    # Check if the project has a 'title' field, otherwise try 'name'
-                                    project_title = project.get('title', project.get('name', 'Unknown'))
-                                    project_embed = discord.Embed(title=f"**Project: {project_title}**\n", color=0xe5e7eb)
-                                    await message.channel.send(embed=project_embed)
-                                    bullets = project.get('bullets', [])
-                                    if not isinstance(bullets, list):
-                                        logging.error("Expected 'bullets' to be a list.")
-                                        continue
-
-                                    for idx, bullet in enumerate(bullets):
-                                        if isinstance(bullet, dict):
-                                            total_projects_score += bullet.get('score', 0)
-                                            total_projects_bullets += 1
-                                            rewrites = "\n\n> ".join(bullet.get('rewrites', [])) if bullet.get('rewrites') else None
-                                            bullet_embed = discord.Embed(title=f"{bullet.get('score', 0)}/10.0", color=get_score_color(bullet.get('score', 0)))
-                                            bullet_embed.add_field(name="", value=f"> *{bullet.get('content', 'No content')}*\n", inline=False)
-                                            bullet_embed.add_field(name="Feedback", value=f"> {bullet.get('feedback', 'No feedback')}\n", inline=False)
-                                            if rewrites:
-                                                bullet_embed.add_field(name="Suggestions ", value=f"> {rewrites}", inline=False)
-                                            await message.channel.send(embed=bullet_embed)
-                                        else:
-                                            logging.error("Bullet item is not a dictionary.")
-                                else:
-                                    logging.error("Project item is not a dictionary.")
-
-                            avg_projects_final_score = 0 if total_projects_bullets == 0 else total_projects_score / total_projects_bullets
-                            projects_final_embed = discord.Embed(
-                                title="Projects Section Score",
-                                color=get_score_color(avg_projects_final_score)
-                            )
-                            projects_final_embed.add_field(name=f"{round(avg_projects_final_score, 1)}/10.0", value="", inline=False)
-                            await message.channel.send(embed=projects_final_embed)
-
-                            # Access formatting safely
-                            formatting = feedback.get("formatting", {})
-                            if not isinstance(formatting, dict):
-                                logging.error("Expected 'formatting' to be a dictionary.")
-                                return
-
-                            formatting_embed = discord.Embed(title="**Formatting Feedback**\n", color=0xe5e7eb)
-                            await message.channel.send(embed=formatting_embed)
-
-                            aspects = formatting.get('aspects', [])
-                            if not isinstance(aspects, list):
-                                logging.error("Expected 'aspects' to be a list.")
-                                return
-
-                            for aspect in aspects:
-                                if isinstance(aspect, dict):
-                                    total_formatting_score += aspect.get('score', 0)
-                                    aspect_embed = discord.Embed(title=f"{aspect.get('score', 0)}/10.0", color=get_score_color(aspect.get('score', 0)))
-                                    aspect_embed.add_field(name=f"{aspect.get('name', 'Unknown')}", value=f"> {aspect.get('feedback', 'No feedback')}\n", inline=False)
-                                    if aspect.get('suggestions'):
-                                        aspect_embed.add_field(name="Suggestions", value=f"> {aspect.get('suggestions')}", inline=False)
-                                    await message.channel.send(embed=aspect_embed)
-                                else:
-                                    logging.error("Aspect item is not a dictionary.")
-
-                            if len(aspects) > 0:
-                                total_formatting_score = total_formatting_score / len(aspects)
-                                overall_score = formatting['overall_score']
-                                overall_score_embed = discord.Embed(title="Formatting Score", color=get_score_color(overall_score))
-                                overall_score_embed.add_field(name=f"{round(overall_score,1)}/10.0", value="", inline=False)
-                                await message.channel.send(embed=overall_score_embed)
-
-                            final_score = (avg_projects_final_score + avg_expereinces_final_score + total_formatting_score) / 3.0  # Ensure float division
-                            gif_url = get_gif(final_score)
-                            # Completion message
-                            final_embed = discord.Embed(
-                                title="AI Resume Review Complete! 🎉",
-                                color=get_score_color(final_score)
-                            )
-                            final_embed.set_image(url=gif_url)
-                            final_embed.add_field(name="\u200b", value="• Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪 •", inline=False)
-                            final_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
-                            await loading_message.edit(embed=final_embed)
-                            
-                            final_score_embed = discord.Embed(title=f"Final Score: {round(final_score, 1)}/10.0", color=get_score_color(final_score))
-                            final_score_embed.set_image(url=gif_url)
-                            final_score_embed.add_field(name="\u200b", value="• Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪 •", inline=False)
-                            final_score_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
-                            await message.channel.send(embed=final_score_embed)
-                            
-                            # Track the resume review in analytics
-                            scores = {
-                                "overall": final_score,
-                                "experiences": avg_expereinces_final_score,
-                                "projects": avg_projects_final_score,
-                                "formatting": total_formatting_score
-                            }
-                            analytics.track_resume_review(message.author.id, message.guild.id, scores)
-                            
-                            # Ask for feedback
-                            feedback_embed = discord.Embed(
-                                title="How was your experience?",
-                                description="Please rate this resume review to help us improve!",
-                                color=0x0699ab
-                            )
-                            feedback_view = FeedbackView(message.author.id, message.guild.id)
-                            await message.channel.send(embed=feedback_embed, view=feedback_view)
-                            
-                        except Exception as e:
-                            logging.error(f"Failed to process PDF attachment: {e}")
-                            await message.channel.send(f"Sorry, I encountered an error while processing your resume. Error details: {str(e)}")
-                            # Log the full traceback for debugging
-                            import traceback
-                            logging.error(f"Full error traceback: {traceback.format_exc()}")
-        else:
-            logging.info(f"Message is not in the specified forum channel")
+        # Check if this is a command (skip if it is)
+        if message.content.startswith(self.command_prefix):
+            return
             
+        # Check if this is the resume review channel
+        is_valid_channel = (
+            message.channel.id == RESUME_REVIEW_CHANNEL_ID or
+            (hasattr(message.channel, 'parent_id') and message.channel.parent_id == RESUME_REVIEW_CHANNEL_ID)
+        )
+        
+        if not is_valid_channel:
+            logging.info(f"Message is not in the specified resume review channel")
+            return
+            
+        logging.info(f"Message received in resume review channel: {message.content}")
+
+        if message.attachments:
+            for attachment in message.attachments:
+                if attachment.filename.lower().endswith('.pdf'):
+                    logging.info(f"Processing attachment: {attachment.filename}")
+                    
+                    # Sending the initial feedback embed
+                    main_embed = discord.Embed(
+                        title="Do you have job posting to review for?",
+                        color=0x0699ab
+                    )
+                    view = JobInputView(self, message)
+                    message_with_view = await message.channel.send(embed=main_embed, view=view)
+                    
+                    await view.wait()
+                    
+                    if view.job_details:
+                        self.job_details = view.job_details
+                    else:
+                        await message.channel.send("No job details provided. Providing general resume formatting feedback.")
+                        self.job_details = None
+                    
+                    await message_with_view.delete()
+                    
+                    gif_url = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif"  # Example GIF URL
+                    loading_embed = discord.Embed(
+                        title="This could take a minute or two -- our reviewer is hard at work! 😜",
+                        color=0x0699ab
+                    )
+                    loading_embed.set_image(url=gif_url)
+                    loading_embed.add_field(name="\u200b", value="• Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪 •", inline=False)
+                    loading_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
+                    loading_message = await message.channel.send(embed=loading_embed)
+
+                    main_embed = discord.Embed(
+                        title="AI Resume Feedback",
+                        description="Currently, the resume review tool will only give feedback on your bullet points for experiences and projects, as well as, resume formatting. This does not serve as a complete resume review, so you should still seek feedback from peers. Additionally, this tool relies on AI and may not always provide the best feedback, so take it with a grain of salt.\n\n**Disclaimer:** Any suggestions provided are purely examples and should not be added as-is without verification of accuracy.\n\n**Note:** We are comparing your resume to Jake's resume for formatting feedback. You can view Jake's resume [here](https://www.overleaf.com/latex/templates/jakes-resume/syzfjbzwjncs).",
+                        color=0x0699ab
+                    )
+                    await message.channel.send(embed=main_embed)
+                    user_resume_bytes = await attachment.read()
+                    jake_resume_bytes = open("resumes/jakes-resume.pdf", "rb").read()
+
+                    try:
+                        if self.job_details:
+                            feedback = review_resume(resume_user=user_resume_bytes, resume_jake=jake_resume_bytes, job_title=self.job_details["job_title"], company=self.job_details["company"], min_qual=self.job_details["min_qual"], pref_qual=self.job_details["pref_qual"])
+                        else:
+                            feedback = review_resume(resume_user=user_resume_bytes, resume_jake=jake_resume_bytes)
+
+                        # Log the feedback structure
+                        logging.info(f"Feedback structure: {feedback}")
+
+                        # Check if feedback is a dictionary
+                        if not isinstance(feedback, dict):
+                            logging.error("Feedback is not a dictionary.")
+                            return
+
+                        # Access experiences safely
+                        experiences = feedback.get("experiences", [])
+                        if not isinstance(experiences, list):
+                            logging.error("Expected 'experiences' to be a list.")
+                            return
+
+                        logging.info(f"Experiences: {experiences}")  # Log the experiences
+
+                        total_experiences_score = 0
+                        total_projects_score = 0
+                        total_formatting_score = 0
+                        total_experiences_bullets = 0
+                        total_projects_bullets = 0
+
+                        for experience in experiences:
+                            if isinstance(experience, dict):
+                                experience_embed = discord.Embed(title=f"**Experience at {experience.get('company', 'Unknown')} - {experience.get('role', 'Unknown')}**\n", color=0xe5e7eb)
+                                await message.channel.send(embed=experience_embed)
+                                bullets = experience.get('bullets', [])
+                                if not isinstance(bullets, list):
+                                    logging.error("Expected 'bullets' to be a list.")
+                                    continue
+
+                                for idx, bullet in enumerate(bullets):
+                                    if isinstance(bullet, dict):
+                                        total_experiences_score += bullet.get('score', 0)
+                                        total_experiences_bullets += 1
+                                        rewrites = "\n\n> ".join(bullet.get('rewrites', [])) if bullet.get('rewrites') else None
+                                        bullet_embed = discord.Embed(title=f"{bullet.get('score', 0)}/10.0", color=get_score_color(bullet.get('score', 0)))
+                                        bullet_embed.add_field(name="", value=f"> *{bullet.get('content', 'No content')}*\n", inline=False)
+                                        bullet_embed.add_field(name="Feedback", value=f"> {bullet.get('feedback', 'No feedback')}\n", inline=False)
+                                        if rewrites:
+                                            bullet_embed.add_field(name="Suggestions ", value=f"> {rewrites}", inline=False)
+                                        await message.channel.send(embed=bullet_embed)
+                                    else:
+                                        logging.error("Bullet item is not a dictionary.")
+                            else:
+                                logging.error("Experience item is not a dictionary.")
+
+                        avg_expereinces_final_score = 0 if total_experiences_bullets == 0 else total_experiences_score / total_experiences_bullets
+                        expereinces_final_embed = discord.Embed(
+                            title="Experience Section Score",
+                            color=get_score_color(avg_expereinces_final_score)
+                        )
+                        expereinces_final_embed.add_field(name=f"{round(avg_expereinces_final_score, 1)}/10.0", value="", inline=False)
+                        await message.channel.send(embed=expereinces_final_embed)
+
+                        # Access projects safely
+                        projects = feedback.get("projects", [])
+                        if not isinstance(projects, list):
+                            logging.error("Expected 'projects' to be a list.")
+                            return
+
+                        for project in projects:
+                            if isinstance(project, dict):
+                                # Check if the project has a 'title' field, otherwise try 'name'
+                                project_title = project.get('title', project.get('name', 'Unknown'))
+                                project_embed = discord.Embed(title=f"**Project: {project_title}**\n", color=0xe5e7eb)
+                                await message.channel.send(embed=project_embed)
+                                bullets = project.get('bullets', [])
+                                if not isinstance(bullets, list):
+                                    logging.error("Expected 'bullets' to be a list.")
+                                    continue
+
+                                for idx, bullet in enumerate(bullets):
+                                    if isinstance(bullet, dict):
+                                        total_projects_score += bullet.get('score', 0)
+                                        total_projects_bullets += 1
+                                        rewrites = "\n\n> ".join(bullet.get('rewrites', [])) if bullet.get('rewrites') else None
+                                        bullet_embed = discord.Embed(title=f"{bullet.get('score', 0)}/10.0", color=get_score_color(bullet.get('score', 0)))
+                                        bullet_embed.add_field(name="", value=f"> *{bullet.get('content', 'No content')}*\n", inline=False)
+                                        bullet_embed.add_field(name="Feedback", value=f"> {bullet.get('feedback', 'No feedback')}\n", inline=False)
+                                        if rewrites:
+                                            bullet_embed.add_field(name="Suggestions ", value=f"> {rewrites}", inline=False)
+                                        await message.channel.send(embed=bullet_embed)
+                                    else:
+                                        logging.error("Bullet item is not a dictionary.")
+                            else:
+                                logging.error("Project item is not a dictionary.")
+
+                        avg_projects_final_score = 0 if total_projects_bullets == 0 else total_projects_score / total_projects_bullets
+                        projects_final_embed = discord.Embed(
+                            title="Projects Section Score",
+                            color=get_score_color(avg_projects_final_score)
+                        )
+                        projects_final_embed.add_field(name=f"{round(avg_projects_final_score, 1)}/10.0", value="", inline=False)
+                        await message.channel.send(embed=projects_final_embed)
+
+                        # Access formatting safely
+                        formatting = feedback.get("formatting", {})
+                        if not isinstance(formatting, dict):
+                            logging.error("Expected 'formatting' to be a dictionary.")
+                            return
+
+                        formatting_embed = discord.Embed(title="**Formatting Feedback**\n", color=0xe5e7eb)
+                        await message.channel.send(embed=formatting_embed)
+
+                        aspects = formatting.get('aspects', [])
+                        if not isinstance(aspects, list):
+                            logging.error("Expected 'aspects' to be a list.")
+                            return
+
+                        for aspect in aspects:
+                            if isinstance(aspect, dict):
+                                total_formatting_score += aspect.get('score', 0)
+                                aspect_embed = discord.Embed(title=f"{aspect.get('score', 0)}/10.0", color=get_score_color(aspect.get('score', 0)))
+                                aspect_embed.add_field(name=f"{aspect.get('name', 'Unknown')}", value=f"> {aspect.get('feedback', 'No feedback')}\n", inline=False)
+                                if aspect.get('suggestions'):
+                                    aspect_embed.add_field(name="Suggestions", value=f"> {aspect.get('suggestions')}", inline=False)
+                                await message.channel.send(embed=aspect_embed)
+                            else:
+                                logging.error("Aspect item is not a dictionary.")
+
+                        if len(aspects) > 0:
+                            total_formatting_score = total_formatting_score / len(aspects)
+                            overall_score = formatting['overall_score']
+                            overall_score_embed = discord.Embed(title="Formatting Score", color=get_score_color(overall_score))
+                            overall_score_embed.add_field(name=f"{round(overall_score,1)}/10.0", value="", inline=False)
+                            await message.channel.send(embed=overall_score_embed)
+
+                        final_score = (avg_projects_final_score + avg_expereinces_final_score + total_formatting_score) / 3.0  # Ensure float division
+                        gif_url = get_gif(final_score)
+                        # Completion message
+                        final_embed = discord.Embed(
+                            title="AI Resume Review Complete! 🎉",
+                            color=get_score_color(final_score)
+                        )
+                        final_embed.set_image(url=gif_url)
+                        final_embed.add_field(name="\u200b", value="• Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪 •", inline=False)
+                        final_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
+                        await loading_message.edit(embed=final_embed)
+                        
+                        final_score_embed = discord.Embed(title=f"Final Score: {round(final_score, 1)}/10.0", color=get_score_color(final_score))
+                        final_score_embed.set_image(url=gif_url)
+                        final_score_embed.add_field(name="\u200b", value="• Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪 •", inline=False)
+                        final_score_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
+                        await message.channel.send(embed=final_score_embed)
+                        
+                        # Track the resume review in analytics
+                        scores = {
+                            "overall": final_score,
+                            "experiences": avg_expereinces_final_score,
+                            "projects": avg_projects_final_score,
+                            "formatting": total_formatting_score
+                        }
+                        analytics.track_resume_review(message.author.id, message.guild.id, scores)
+                        
+                        # Ask for feedback
+                        feedback_embed = discord.Embed(
+                            title="How was your experience?",
+                            description="Please rate this resume review to help us improve!",
+                            color=0x0699ab
+                        )
+                        feedback_view = FeedbackView(message.author.id, message.guild.id)
+                        await message.channel.send(embed=feedback_embed, view=feedback_view)
+                        
+                    except Exception as e:
+                        logging.error(f"Failed to process PDF attachment: {e}")
+                        await message.channel.send(f"Sorry, I encountered an error while processing your resume. Error details: {str(e)}")
+                        # Log the full traceback for debugging
+                        import traceback
+                        logging.error(f"Full error traceback: {traceback.format_exc()}")
+
 def start_bot(token):
     # Discord Bot Setup
     intents = discord.Intents.default()
