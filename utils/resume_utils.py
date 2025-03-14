@@ -317,11 +317,18 @@ def review_resume(resume_user: bytes, resume_jake: bytes, job_title: str = None,
     
     try:
         completion = get_chat_completion(max_tokens=8192, messages=messages, system=system_prompt, temperature=0.25)
-        result = json.loads(completion)
-        logger.info(f"Result structure: {result}")
-        logger.info(result['content'][0])
-        logger.info(result['content'][0]['text'])
-        resume_feedback = ResumeFeedback(**json.loads(result['content'][0]['text']))
+        logger.info(f"Result structure: {completion}")
+        
+        # The completion should be a JSON string directly from the API
+        try:
+            result = json.loads(completion)
+            logger.info(f"Parsed result: {result}")
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse JSON from completion: {e}")
+            logger.error(f"Raw completion: {completion}")
+            raise ValueError(f"Invalid JSON response from API: {e}")
+        
+        resume_feedback = ResumeFeedback(**result)
         logger.info("Resume reviewed and feedback generated successfully")
         resume_feedback_model = resume_feedback.dict()
         logger.info(resume_feedback_model)
