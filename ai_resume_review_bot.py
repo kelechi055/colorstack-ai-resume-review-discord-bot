@@ -23,6 +23,14 @@ class ResumeBot(commands.Bot):
         logging.info(f'Logged in as {self.user.name}')
         logging.info('Bot is ready to process messages and threads')
     
+    async def heartbeat_task(self):
+        """Background task that keeps the bot active by logging a heartbeat message periodically."""
+        await self.wait_until_ready()
+        logging.info("Heartbeat task started")
+        while not self.is_closed():
+            logging.info("Discord bot heartbeat - keeping the application active")
+            await asyncio.sleep(1200)  # 20 minutes
+    
     async def on_message(self, message):
         # logging.info(f"Message event received: {message.id} in channel {message.channel.parent_id}")
 
@@ -216,4 +224,8 @@ def start_bot(token):
     intents.message_content = True
     intents.members = True
     bot = ResumeBot(command_prefix="!", intents=intents)
+    
+    # Start the heartbeat task to keep the bot active
+    bot.loop.create_task(bot.heartbeat_task())
+    
     bot.run(token)
