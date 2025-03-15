@@ -8,7 +8,7 @@ from utils.job_input_view import JobInputView
 from utils.feedback_view import FeedbackView
 from utils.resume_utils import review_resume
 from utils.analytics import analytics
-from config import RESUME_REVIEW_CHANNEL_ID
+from config import RESUME_REVIEW_CHANNEL_ID, GIFS, HIGH_SCORE_COLOR, GOOD_SCORE_COLOR, LOW_SCORE_COLOR, BAD_SCORE_COLOR
 
 # Configure logging
 logging.basicConfig(
@@ -21,29 +21,23 @@ logging.basicConfig(
 
 def get_score_color(score):
     if score >= 8:
-        return 0x00ff00  # Green
+        return HIGH_SCORE_COLOR  # Green
     elif score >= 6:
-        return 0xffff00  # Yellow
+        return GOOD_SCORE_COLOR  # Light Blue
+    elif score >= 4:
+        return LOW_SCORE_COLOR  # Yellow
     else:
-        return 0xff0000  # Red
+        return BAD_SCORE_COLOR  # Red
 
 def get_gif(score):
     if score >= 8:
-        gifs = [
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif",
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif",
-        ]
+        return random.choice(GIFS["high_score_gifs"])
     elif score >= 6:
-        gifs = [
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif",
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif",
-        ]
+        return random.choice(GIFS["good_score_gifs"])
+    elif score >= 4:
+        return random.choice(GIFS["low_score_gifs"])
     else:
-        gifs = [
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif",
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif",
-        ]
-    return random.choice(gifs)
+        return random.choice(GIFS["bad_score_gifs"])
 
 class ResumeBot(commands.Bot):
     def __init__(self, command_prefix, intents):
@@ -404,8 +398,10 @@ class ResumeBot(commands.Bot):
                         final_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
                         await loading_message.edit(embed=final_embed)
                         
+                        # For the final score embed, use a GIF based on the score
+                        score_based_gif_url = get_gif(final_score)
                         final_score_embed = discord.Embed(title=f"Final Score: {round(final_score, 1)}/10.0", color=get_score_color(final_score))
-                        final_score_embed.set_image(url=gif_url)
+                        final_score_embed.set_image(url=score_based_gif_url)
                         final_score_embed.add_field(name="\u200b", value="• Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪 •", inline=False)
                         final_score_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
                         await message.channel.send(embed=final_score_embed)
