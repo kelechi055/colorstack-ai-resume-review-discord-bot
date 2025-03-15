@@ -233,12 +233,13 @@ class ResumeBot(commands.Bot):
                     
                     await message_with_view.delete()
                     
-                    gif_url = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif"  # Example GIF URL
+                    # Use a specific processing GIF for the loading state
+                    processing_gif_url = "https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnlrNXdsdWRnbTA2ZTNjbHIxOG1jOGc4ZndpM3o2aWY2YW04d2cwdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/paKhPtCfM7RDQyRyGf/giphy.gif"
                     loading_embed = discord.Embed(
                         title="This could take a minute or two -- our reviewer is hard at work! 😜",
                         color=0x0699ab
                     )
-                    loading_embed.set_image(url=gif_url)
+                    loading_embed.set_image(url=processing_gif_url)
                     loading_embed.add_field(name="\u200b", value="• Inspired by [Oyster](https://github.com/colorstackorg/oyster) 🦪 •", inline=False)
                     loading_embed.set_footer(text="• Powered by ColorStack UF ResumeAI •")
                     loading_message = await message.channel.send(embed=loading_embed)
