@@ -24,7 +24,7 @@ def convert_pdf_to_image(file: bytes) -> str:
                     # Windows - try common installation path
                     poppler_path = os.path.join(os.getcwd(), 'poppler', 'bin')
                     if not os.path.exists(poppler_path):
-                        poppler_path = r"C:\Program Files\poppler\bin"
+                        poppler_path = r"C:\Program Files\poppler\Library\bin"
                     images = convert_from_bytes(file, first_page=1, last_page=1, poppler_path=poppler_path)
                 elif sys.platform == 'darwin':
                     # macOS - try Homebrew path
