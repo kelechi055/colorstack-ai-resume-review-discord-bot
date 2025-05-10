@@ -1,4 +1,5 @@
 import json
+import time
 from config import ANTHROPIC_API_KEY
 import requests
 import logging
@@ -26,6 +27,7 @@ def get_chat_completion(max_tokens: int, messages: list, system: str = None, tem
     for attempt in range(retries):
         try:
             response = requests.post(url, headers=headers, data=json.dumps(data))
+            logging.debug("Sending to Anthropic: %s", json.dumps(data)[:1000])  # Only show first 1000 chars
             response.raise_for_status()
             
             # Parse the response
@@ -49,7 +51,7 @@ def get_chat_completion(max_tokens: int, messages: list, system: str = None, tem
             logging.error("Error during API request attempt %d: %s", attempt + 1, err)
             if attempt < retries - 1:
                 logging.info("Retrying...")
-                asyncio.sleep(2)
+                time.sleep(2)
             else:
                 logging.error("Failed after %d attempts", retries)
                 raise
